@@ -19,7 +19,9 @@ const QUEST_TYPE = '[]'
 
 $.ready(function () {
 
+
     // Ajax file getter. after calling getQuestions, the fileText will populate with the named text file
+    Questions.getQuestions();
     console.log(Questions.fileText);
 
     
