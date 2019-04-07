@@ -14,12 +14,14 @@ const QUEST_TYPE = '[]'
              }
          )
      }
- }
+}
+ Questions.getQuestions();
 
 $.ready(function () {
 
     // Ajax file getter. after calling getQuestions, the fileText will populate with the named text file
-   
+    console.log(Questions.fileText);
+
     
     
     
