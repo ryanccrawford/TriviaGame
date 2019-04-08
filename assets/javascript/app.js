@@ -5,27 +5,37 @@ var incorrect = 0; // incorrect answer score
 var waitBetweenQuestions = 2000; // Time between the questions in ms
 const S = ':'; //Delimiter for parsing the data txt files / Could you JSON here but for simplicity  just using plain TXT files with windows line endings
 const QUEST_TYPE = '[]'
- var Questions = {
-     fileText: '',
-     getQuestions: function () {
-         var tempThis = this;
-         $.get('./assets/data/questions.txt', function (data) {
-                 tempThis.fileText = data;
-             }
-         )
-     }
-}
- Questions.getQuestions();
+// //  var Questions = {
+//      fileText: function () {
+//         var answer = Questions.getQuestions();
+//          while (answer.data == '') { };
+//          this.asynText = answer.data;
+//           console.log(this.asynText);
+//          return this.asynText;
+//      },
+//      asynText: '',
+//      getQuestions: function () {
+       
+//          return $.get('./assets/data/questions.txt', function (data) {
+//                 return data;
+//              }
+//          )
+//      }
+// }
+ 
 
-$.ready(function () {
+$(document).ready(function () {
 
-
+ 
     // Ajax file getter. after calling getQuestions, the fileText will populate with the named text file
-    Questions.getQuestions();
-    console.log(Questions.fileText);
+    
+    var questionsStr = $.load('https://ryanccrawford.github.io/TriviaGame/assets/data/questions.txt');
 
-    
-    
+    var re = /(.*\S*):+(.*\S*):+\[(.*)\],(.*:+.*:+.*:+.*)/;
+    var matches = questionsStr.matchAll(re);
+    matches.forEach(element => {
+        console.log(element);
+    });
     
  
 
