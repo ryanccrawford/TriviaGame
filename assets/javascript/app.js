@@ -5,39 +5,45 @@ var incorrect = 0; // incorrect answer score
 var waitBetweenQuestions = 2000; // Time between the questions in ms
 const S = ':'; //Delimiter for parsing the data txt files / Could you JSON here but for simplicity  just using plain TXT files with windows line endings
 const QUEST_TYPE = '[]'
-// //  var Questions = {
-//      fileText: function () {
-//         var answer = Questions.getQuestions();
-//          while (answer.data == '') { };
-//          this.asynText = answer.data;
-//           console.log(this.asynText);
-//          return this.asynText;
-//      },
-//      asynText: '',
-//      getQuestions: function () {
-       
-//          return $.get('./assets/data/questions.txt', function (data) {
-//                 return data;
-//              }
-//          )
-//      }
-// }
+var triviaQuestion = function () {
+    return {
+        id: 0,
+        title: '',
+        question: '',
+        answers: []
+    }
+};
+var id = 0;
+var triviaQuestions = [];
+var questions = '';
+var timeCount = 0;
+ var timerRef;
+var timerIsOn = false;
  
-
 $(document).ready(function () {
-
- 
-    // Ajax file getter. after calling getQuestions, the fileText will populate with the named text file
+    var timerDisplay = $('#timmerDisplay');
+    $(timerDisplay).text(timeToDisplayString(0));
+    if (!timerIsOn) {
+      timerRef = setInterval(doloader, 1000);
+      timerIsOn = true;
+    }
+    $('#gameTitle').hide();
+    $('#gameTitle').load("https://ryanccrawford.github.io/TriviaGame/assets/data/questions.txt", 'load=true',
+        function (data, status) {
+           
+            processQuestions(data);
+            $('#gameTitle').text('Trivia Bonanza').show();
+            startGame();
+            }
+    );
+  
+  
+        
+       
     
-    var questionsStr = $.load('https://ryanccrawford.github.io/TriviaGame/assets/data/questions.txt');
-
-    var re = /(.*\S*):+(.*\S*):+\[(.*)\],(.*:+.*:+.*:+.*)/;
-    var matches = questionsStr.matchAll(re);
-    matches.forEach(element => {
-        console.log(element);
-    });
     
- 
+
+     
 
     // * You'll create a trivia form with multiple choice or true/false options (your choice).
     // * The player will have a limited amount of time to finish the quiz. 
@@ -72,5 +78,75 @@ function timeToDisplayString(t) {
 
     return minutes + ":" + seconds;
 }
+function doloader() {
 
+        timeCount++;
+         $(timerDisplay).text(timeToDisplayString(timeCount));
+}
 });
+var question = function () {
+    return {
+        id: 0,
+        tile: '',
+        question:'',
+        choices: [],
+        startTimer: function () {
+            
+        },
+        getAnswered: function () {
+            
+        },
+        playerAnswer: '',
+        isAnswerCorrect: function () {
+            
+        },
+        correctImage: '',
+        incorrectImage:'',
+}}
+function processQuestions(_questions) {
+    questions = _questions;
+    var re = /((.*\S*):+(.*\S*):+)((\[(.*)\]),(.*:+.*:+.*:+.*)|(\[(.*)\]))\n/gim;
+    var matches = _questions.matchAll(re);
+    var flag = false;
+    var ref;
+    while (ref = matches.next()) {
+        if (!ref.value) {
+            break;
+        }
+        var tq = new triviaQuestion();
+        tq.id = id++;
+        tq.title = ref.value[2];
+        tq.question = ref.value[3];
+        if (ref.value[6] == 'multi') {
+            var an = ref.value[7].split(':');
+            var l = an.length;
+            for (var i = 0; i < l; i++) {
+                tq.answers.push(an[i]);
+            }
+        } else {
+            tq.answers.push('T');
+            tq.answers.push('F');
+        }
+        triviaQuestions.push(tq);
+    }
+
+
+}
+function startGame() {
+    clearInterval(timerRef);
+    timeCount = 0;
+    var tQuests = new question();
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
