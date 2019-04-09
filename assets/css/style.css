@@ -6,3 +6,9 @@
     width:100%;
     height:80px;
 }
+.pointer-hover:hover {
+    cursor: pointer;
+    background-color: grey !important;
+    border: 1px solid grey !important;
+    color: white !important;
+}
