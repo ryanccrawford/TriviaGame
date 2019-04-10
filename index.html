@@ -5,13 +5,13 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+ 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
   <body id="gameBackground">
-    <div class="modal" tabindex="-1" role="dialog">
+    <div id="messageOver" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -36,27 +36,27 @@
       <div class="container">
           <div class="container-fluid">
               <div class="row">
-                  <div class="col-xs-6">
+                  <div class="col">
                       <div id="timmerDisplay" class="text-white">
-
                       </div>
                   </div>
               </div>
           </div>
           <div class="row">
-            <div class="col-xs-1-12">
-                    <h2 id="qtitle" class="text-white"></h2>
-                  <div id="question" class="text-white"></div>
-                  <div id="multi-choice-answers" class="text-white">
-
+            <div id="area" class="card col bg-primary rounded">
+                <div class="card-header">
+                    <h2 id="qtitle"></h2>
+                </div>
+                    <div class="card-body">
+                        <p id="question" class="card-text text-white" style="font-size:18px"></p>
+                        <div id="multi-choice-answers" class="text-white"></div>
+                        <div id="tf-answers" class="text-white"></div>
                   </div>
-                  <div id="tf-answers" class="text-white">
-
-                  </div>
+                </div>
             </div>
           </div>
           <div class="row">
-              <div class="col-xs-1-12">
+              <div class="col-12">
                   <div id="answerCorrect"></div>
                   <div id="answerIncorrect"></div>
               </div>

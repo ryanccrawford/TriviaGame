@@ -16,18 +16,11 @@
 // * On the final screen, show the number of correct answers, incorrect answers, and an option to restart the game(without reloading the page).
 
 
-// taken from timers class work assignment
-
 //Globals
-var timmerDisplay = $('#timmerDisplay')
-var correct = 0; // correct answer score
-var incorrect = 0; // incorrect answer score
-const QUESTION_TIMMER = 10 // Time per question in ms
-const WAIT_DELAY = 2000; // Time between the questions in ms
-const D = ':'; //Delimiter for parsing the data txt files / Could you JSON here but for simplicity  just using plain TXT files with windows line endings
-const TF = 'tf';
-const MULTI = 'multi';
-//Question Object
+var     timmerDisplay = $('#timmerDisplay'), correct = [], incorrect = [], tQuests, results = [], timeRef, running = false, score = 0, colorSpin = ['text-white bg-danger mb-3','text-white bg-warning mb-3','text-white bg-success mb-3'];
+var currentGameObj;
+const   QUESTION_TIMMER = 25, WAIT_DELAY = 2000, D = ':', TF = 'tf', MULTI = 'multi';
+
 var triviaQuestion = function () {
     return {
         id: 0,
@@ -36,22 +29,11 @@ var triviaQuestion = function () {
         answers: [],
         answer: 0,
     };
-};
-var timeRef;
-var running = false;
-var score = 0;
-//Question ID Counter
-var id = 0;
-// Array to hold all question objects
-var triviaQuestions = [];
-// string to hold raw txt file data from server
-var questions = '';
-//actual timer count
-var timeCount = 0;
-// reference to timer to cancel
-//used to indicate timers state
-var timerIsOn = false;
-var time = 0;
+}
+
+
+var idCounter = 0, triviaQuestions = [], questions = '', timeCount = 0, timerIsOn = false, time = 0;
+
 $(document).ready(function () {
 
     $('#gameTitle').hide();
@@ -59,28 +41,46 @@ $(document).ready(function () {
         function (data, status) {
 
             processQuestions(data);
+            $('#gameTitle').addClass('text-white');
             $('#gameTitle').text('Trivia Bonanza').show();
             startGame();
         }
     );
 
 });
-var game = function (_questionObject) {
+var game = function () {
     return {
-        id: _questionObject.id,
-        tile: _questionObject.title,
-        question: _questionObject.question,
-        choices: _questionObject.answers,
-        answer: _questionObject.answer,
-        startGame: function () {
+        id: null,
+        tile: null,
+        question: null,
+        choices: null,
+        answer: null,
+        _questionObject: null,
+        nextQuestion: function(){
+            this._questionObject = getNextQuestion();
+            $('#multi-choice-answers').empty();
+            this.question = this._questionObject.question;
+            this.id= this._questionObject.id;
+            this.tile= this._questionObject.title;
+            this.choices= this._questionObject.answers;
+            this.answer= this._questionObject.answer;
             var answerList = $('<ul>');
-            $(answerList).addClass('list-group');
+            var color = Math.floor(Math.random()*3);
+            var bgColor = colorSpin[color];
+            $('#area').removeClass();
+            $('#area').addClass(bgColor);
+            $(answerList).addClass('list-group list-group-flush');
             for (let i = 0; i < this.choices.length; i++) {
                 var button = $('<li>');
                 $(button).addClass('text-dark');
                 $(button).attr('id', 'answer_' + i.toString());
-                $(button).text(this.choices[i]);
-                $(button).click(this, this.bclick);
+                var answerText = this.choices[i];
+                var icon = $('<img>');
+                $(icon).attr('src', 'assets/images/check.gif');
+                $(icon).css('width', '64px');
+                $(button).before(icon);
+                $(button).text(answerText);
+                $(button).click(this.bclick);
                 $(button).addClass('list-group-item pointer-hover');
                 $(answerList).append(button);
 
@@ -89,19 +89,29 @@ var game = function (_questionObject) {
             $('#question').text(this.question);
             $('#qtitle').text(this.tile);
             timeCount = QUESTION_TIMMER;
+            setTimer(timeCount);   
+            setTimeout(startTimmer(), 2000);
+
+            
+        },
+        startGame: function () {
+            updateTimmerDisplay();
+            timeCount = QUESTION_TIMMER;
             setTimer(timeCount);
-            startTimmer();
+            this.nextQuestion();
         },
         playerAnswer: '',
-        bclick: function (event, thisRef) {
-           
+        bclick: function (event) {
+            pauseTimmer();
             var choice = event.currentTarget.id;
-            if (choice[choice.length - 1] === thisRef.answer) {
-
-                return true;
-            } else {
-                return false;
+            results.push(choice);
+            currentGameObj.playerAnswer = choice;
+            
+            if(isGameOver()){
+                doGameOver();
             }
+            currentGameObj._questionObject = getNextQuestion();
+           currentGameObj.nextQuestion();
 
         },
         isAnswerCorrect: false,
@@ -121,7 +131,7 @@ function processQuestions(_questions) {
             break;
         }
         var tq = new triviaQuestion();
-        tq.id = id++;
+        tq.id = idCounter++;
         tq.title = ref.value[2];
         tq.question = ref.value[3];
         if (ref.value[6] == 'multi') {
@@ -142,46 +152,63 @@ function processQuestions(_questions) {
 function startGame() {
 
     resetScreen();
-    var results = [];
-    var currentQuestion = triviaQuestions.pop();
-    var tQuests = new game(currentQuestion, gt);
-    tQuests.startGame();
-
+    updateTimmerDisplay();
+    results = [];
+    currentGameObj = new game();
+    
+    currentGameObj.startGame();
+    
 }
+function getNextQuestion(){
+    triviaQuestions.reverse();
+    return triviaQuestions.pop();
+   
+}
+
+
 function timeToString(t) {
   
     var seconds = t.toString();
 
     if (seconds < 10) {
         seconds = "0" + seconds;
+    }else{
+
     }
-    return seconds;
+    return "00:" + seconds;
 }
 function tick() {
     if (running) {
-        --timeCount;
-        if (timeCount <= 0) {
-            timesUP();
+        
+        if (--timeCount < 0) {
             running = false;
+            timesUP();
         } else {
-            var currentTime = timeToString(timeCount);
-            $(timmerDisplay).text(currentTime);
+            updateTimmerDisplay();
         }
     }
 }
-function setTimer(_time) {
-    if (typeof (_time) === 'undefined') {
-        time = time;
-    } else {
+function setTimer(_time = 0) {
+    if(_time != 0){
         time = _time;
     }
+    
+    running = false;
 }
+function updateTimmerDisplay(){
+    var t = timeToString(timeCount);
+    $(timmerDisplay).text(t);
+
+}
+
 function startTimmer() {
     if (!running) {
+        
         running = true;
-        timeRef = setInterval(tick, time);
+        timeRef = setInterval(tick, 1000);
 
     }
+    
 }
 function pauseTimmer() {
     if (running) {
@@ -199,4 +226,23 @@ function resetScreen() {
    $('#multi-choice-answers').text('');
    $('#tf-answers').text('');
    $('#timmerDisplay').text('');
+}
+function timesUP(){
+//TODO: function to fire when time is up. Needs to load the next question if there is one
+    
+if(isGameOver()){
+        showGameOutcome();
+
+    }else{
+        tQuests.nextQuestion();
+    }
+}
+function isGameOver(){
+    return triviaQuestions.length <= 0;
+}
+function showGameOutcome(){
+
+    //TODO: function for modal box popup of game outcome
+    $('#messageOver').modal('show')
+
 }
