@@ -18,7 +18,7 @@
 
 //Globals
 var     timmerDisplay = $('#timmerDisplay'), correct = [], incorrect = [], tQuests, results = [], timeRef, running = false, score = 0, colorSpin = ['text-white bg-danger mb-3','text-white bg-warning mb-3','text-white bg-success mb-3'];
-var currentGameObj;
+var currentGameObj, questCount=0;
 const   QUESTION_TIMMER = 25, WAIT_DELAY = 2000, D = ':', TF = 'tf', MULTI = 'multi';
 
 var triviaQuestion = function () {
@@ -57,26 +57,30 @@ var game = function () {
         answer: null,
         _questionObject: null,
         nextQuestion: function(){
+            questCount++;
+            if(!running){
             this._questionObject = getNextQuestion();
             $('#multi-choice-answers').empty();
             this.question = this._questionObject.question;
             this.id= this._questionObject.id;
-            this.tile= this._questionObject.title;
+            this.tile= questCount + ". " + this._questionObject.title;
             this.choices= this._questionObject.answers;
             this.answer= this._questionObject.answer;
             var answerList = $('<ul>');
             var color = Math.floor(Math.random()*3);
             var bgColor = colorSpin[color];
             $('#area').removeClass();
+            $('#area').addClass('card col');
             $('#area').addClass(bgColor);
             $(answerList).addClass('list-group list-group-flush');
+            $('#area').fadeIn();
             for (let i = 0; i < this.choices.length; i++) {
                 var button = $('<li>');
                 $(button).addClass('text-dark');
                 $(button).attr('id', 'answer_' + i.toString());
                 var answerText = this.choices[i];
                 var icon = $('<img>');
-                $(icon).attr('src', 'assets/images/check.gif');
+                $(icon).attr('src', 'https://assets/images/check.gif');
                 $(icon).css('width', '64px');
                 $(button).before(icon);
                 $(button).text(answerText);
@@ -88,21 +92,24 @@ var game = function () {
             $('#multi-choice-answers').append(answerList);
             $('#question').text(this.question);
             $('#qtitle').text(this.tile);
+       
             timeCount = QUESTION_TIMMER;
             setTimer(timeCount);   
-            setTimeout(startTimmer(), 2000);
+            startTimmer();
 
-            
+        }
         },
         startGame: function () {
             updateTimmerDisplay();
             timeCount = QUESTION_TIMMER;
             setTimer(timeCount);
             this.nextQuestion();
+            
         },
         playerAnswer: '',
         bclick: function (event) {
             pauseTimmer();
+            $('#area').hide();
             var choice = event.currentTarget.id;
             results.push(choice);
             currentGameObj.playerAnswer = choice;
@@ -221,20 +228,23 @@ function resetTimmer() {
     timeCount = parseInt(QUESTION_TIMMER);
 }
 function resetScreen() {
-    
+   $('#area').fadeOut();
    $('#question').text('');
    $('#multi-choice-answers').text('');
    $('#tf-answers').text('');
    $('#timmerDisplay').text('');
+  
 }
 function timesUP(){
 //TODO: function to fire when time is up. Needs to load the next question if there is one
-    
+$('#area').hide();
+clearInterval(timeRef);
 if(isGameOver()){
         showGameOutcome();
 
     }else{
-        tQuests.nextQuestion();
+         
+        currentGameObj.startGame();
     }
 }
 function isGameOver(){
