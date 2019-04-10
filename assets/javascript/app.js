@@ -19,7 +19,7 @@
 //Globals
 var     timmerDisplay = $('#timmerDisplay'), correct = [], incorrect = [], tQuests, results = [], timeRef, running = false, score = 0, colorSpin = ['text-white bg-danger mb-3','text-white bg-warning mb-3','text-white bg-success mb-3'];
 var currentGameObj, questCount=0;
-const   QUESTION_TIMMER = 25, WAIT_DELAY = 2000, D = ':', TF = 'tf', MULTI = 'multi';
+const   QUESTION_TIMMER = 15, WAIT_DELAY = 2000, D = ':', TF = 'tf', MULTI = 'multi';
 
 var triviaQuestion = function () {
     return {
@@ -35,15 +35,17 @@ var triviaQuestion = function () {
 var idCounter = 0, triviaQuestions = [], questions = '', timeCount = 0, timerIsOn = false, time = 0;
 
 $(document).ready(function () {
-
+    $('#timmerDisplay').hide();
     $('#gameTitle').hide();
     $('#gameTitle').load("https://ryanccrawford.github.io/TriviaGame/assets/data/questions.txt", 'load=true',
         function (data, status) {
 
-            processQuestions(data);
+            
             $('#gameTitle').addClass('text-white');
-            $('#gameTitle').text('Trivia Bonanza').show();
-            startGame();
+            $('#gameTitle').text('Trivia Bonanza').fadeIn(250);
+            processQuestions(data);
+            setTimeout(startGame, 5000);
+           
         }
     );
 
@@ -109,6 +111,7 @@ var game = function () {
         playerAnswer: '',
         bclick: function (event) {
             pauseTimmer();
+            $(timmerDisplay).fadeOut(250);
             $('#area').hide();
             var choice = event.currentTarget.id;
             results.push(choice);
@@ -182,7 +185,7 @@ function timeToString(t) {
     }else{
 
     }
-    return "00:" + seconds;
+    return seconds + ' <span class="seconds"> seconds remaining.</span>';
 }
 function tick() {
     if (running) {
@@ -204,7 +207,7 @@ function setTimer(_time = 0) {
 }
 function updateTimmerDisplay(){
     var t = timeToString(timeCount);
-    $(timmerDisplay).text(t);
+    $(timmerDisplay).html(t);
 
 }
 
@@ -213,7 +216,7 @@ function startTimmer() {
         
         running = true;
         timeRef = setInterval(tick, 1000);
-
+        $(timmerDisplay).fadeIn(250);
     }
     
 }
@@ -253,6 +256,6 @@ function isGameOver(){
 function showGameOutcome(){
 
     //TODO: function for modal box popup of game outcome
-    $('#messageOver').modal('show')
+    $('#messageOver').modal('show');
 
 }

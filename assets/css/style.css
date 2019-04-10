@@ -42,3 +42,8 @@
 .rounded{
     border-radius: 10px !important;
 }
+.seconds{
+    font-family: Arial, Helvetica, sans-serif;
+    color:white;
+    font-size: 20px;
+}
