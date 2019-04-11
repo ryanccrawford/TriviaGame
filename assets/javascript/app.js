@@ -27,12 +27,13 @@ var triviaQuestion = function () {
         title: '',
         question: '',
         answers: [],
-        answer: 0,
+        guessed: '',
+        answer:''
     };
 }
 
 
-var idCounter = 0, triviaQuestions = [], questions = '', timeCount = 0, timerIsOn = false, time = 0;
+var idCounter = 0, triviaQuestions = [], answers='', questions = '', timeCount = 0, timerIsOn = false, time = 0;
 
 $(document).ready(function () {
     $('#timmerDisplay').hide();
@@ -40,15 +41,28 @@ $(document).ready(function () {
     $('#gameTitle').load("https://ryanccrawford.github.io/TriviaGame/assets/data/questions.txt", 'load=true',
         function (data, status) {
 
+            if (status === 'success') {
+                $('#gameTitle').addClass('text-white');
+                $('#gameTitle').text('Trivia Bonanza').fadeIn(250);
+                processQuestions(data);
             
-            $('#gameTitle').addClass('text-white');
-            $('#gameTitle').text('Trivia Bonanza').fadeIn(250);
-            processQuestions(data);
-            setTimeout(startGame, 5000);
-           
+                $('#answerHolder').load("https://ryanccrawford.github.io/TriviaGame/assets/data/answers.txt", 'load=true',
+                    function (answers, status) {
+                        if (status === 'success') {
+                            $('#answerHolder').empty();
+                            processAnswers(answers);
+                            setTimeout(startGame, 2000);
+                        } else {
+                            doLoadError();
+                        }
+                    }
+                );
+            } else {
+                doLoadError();
+            }
         }
     );
-
+    
 });
 var game = function () {
     return {
@@ -82,7 +96,7 @@ var game = function () {
                 $(button).attr('id', 'answer_' + i.toString());
                 var answerText = this.choices[i];
                 var icon = $('<img>');
-                $(icon).attr('src', 'https://assets/images/check.gif');
+                $(icon).attr('src', '../images/check.gif');
                 $(icon).css('width', '64px');
                 $(button).before(icon);
                 $(button).text(answerText);
@@ -129,7 +143,21 @@ var game = function () {
     };
 
 };
-
+function processAnswers(_answers) {
+    
+    questions = _answers;
+    var re = /([ABCD]) | (T{ 1 })| (F{ 1 } \s{ 1 } \-{ 1}\s{ 1 } \S.+)/gm;
+    var matches = _answers.matchAll(re);
+    var flag = false;
+    var ref;
+    var ct = 0;
+    while (ref = matches.next()) {
+        if (!ref.value) {
+            break;
+        }
+        triviaQuestions[ct++].answer = ref[0];
+    }   
+}
 function processQuestions(_questions) {
     questions = _questions;
     var re = /((.*\S*):+(.*\S*):+)((\[(.*)\]),(.*:+.*:+.*:+.*)|(\[(.*)\]))\n/gim;
@@ -190,10 +218,11 @@ function timeToString(t) {
 function tick() {
     if (running) {
         
-        if (--timeCount < 0) {
+        if (timeCount <= 0) {
             running = false;
             timesUP();
         } else {
+            timeCount--;
             updateTimmerDisplay();
         }
     }
@@ -231,7 +260,7 @@ function resetTimmer() {
     timeCount = parseInt(QUESTION_TIMMER);
 }
 function resetScreen() {
-   $('#area').fadeOut();
+   $('#area').hide();
    $('#question').text('');
    $('#multi-choice-answers').text('');
    $('#tf-answers').text('');
@@ -257,5 +286,9 @@ function showGameOutcome(){
 
     //TODO: function for modal box popup of game outcome
     $('#messageOver').modal('show');
+
+}
+function doLoadError() {
+    //TODO: NETWORK ERROR MESSAGE HERE
 
 }
