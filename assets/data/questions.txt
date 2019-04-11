@@ -38,4 +38,4 @@ Hugs Weird or Healthy:Science has proven that giving and recieving hugs improves
 Music:Men and Women who listen to ______ music tend to be better _______ and have longer relationships?:[multi],different sex:similar sex:similar communicators:different communicators
 Text per minute:People text slower to people they like?:[TF]
 Oldies but Goodies:What percentage of people enjoy old songs because of the memories attached to those songs?:[multi],80:60:70:75
-Don't Worry Be Happy:Research says you can fool your mind into thinking you are happy and smiling by doing what?:[multi],putting a pencil inbetween your teeth,telling yourself a joke,watching a funny video,smiling at yourself in the mirror
+Don't Worry Be Happy:Research says you can fool your mind into thinking you are happy and smiling by doing what?:[multi],putting a pencil inbetween your teeth:telling yourself a joke:watching a funny video:smiling at yourself in the mirror

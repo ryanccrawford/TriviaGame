@@ -145,17 +145,16 @@ var game = function () {
 };
 function processAnswers(_answers) {
     
-    questions = _answers;
-    var re = /([ABCD]) | (T{ 1 })| (F{ 1 } \s{ 1 } \-{ 1}\s{ 1 } \S.+)/gm;
+    answers = _answers;
+    var re = /(([ABCD])|(T{1})|(F{1}\s{1}\-{1}\s{1}\S.+))\n/gm;
     var matches = _answers.matchAll(re);
-    var flag = false;
     var ref;
     var ct = 0;
     while (ref = matches.next()) {
         if (!ref.value) {
             break;
         }
-        triviaQuestions[ct++].answer = ref[0];
+        triviaQuestions[ct++].answer = ref[1];
     }   
 }
 function processQuestions(_questions) {
