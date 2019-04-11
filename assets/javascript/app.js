@@ -128,9 +128,32 @@ var game = function () {
             $(timmerDisplay).fadeOut(250);
             $('#area').hide();
             var choice = event.currentTarget.id;
-            results.push(choice);
-            currentGameObj.playerAnswer = choice;
+            var letterAnswer;
+            switch (choice){
+                case 'answer_0':
+                letterAnswer = 'A'
+                break;
+                case 'answer_1':
+                letterAnswer = 'B'
+                break;
+                case 'answer_2':
+                letterAnswer = 'C'
+                break;
+                case 'answer_3':
+                letterAnswer = 'D'
+                break;
+                default:
+
+            }
             
+            currentGameObj._questionObject.playerAnswer = letterAnswer;
+            if( currentGameObj._questionObject.playerAnswer ===  currentGameObj._questionObject.answer){
+               currentGameObj._questionObject.answer = true;
+            }else{
+                currentGameObj._questionObject.isAnswerCorrect = false;
+            }
+            results.push(currentGameObj._questionObject);
+
             if(isGameOver()){
                 doGameOver();
             }
@@ -146,15 +169,17 @@ var game = function () {
 function processAnswers(_answers) {
     
     answers = _answers;
-    var re = /(([ABCD])|(T{1})|(F{1}\s{1}\-{1}\s{1}\S.+))\n/gm;
+    var re = /(([ABCDTF]\n)|(F\s.+))/g;
     var matches = _answers.matchAll(re);
     var ref;
     var ct = 0;
+   
     while (ref = matches.next()) {
+       
         if (!ref.value) {
             break;
         }
-        triviaQuestions[ct++].answer = ref[1];
+        triviaQuestions[ct++].answer = ref.value[1];
     }   
 }
 function processQuestions(_questions) {
