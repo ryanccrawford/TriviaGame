@@ -252,6 +252,7 @@ function processQuestions(_questions) {
             break;
         }
         var tq = new triviaQuestion();
+        var choices = ['A.','B.','C.','D.']
         tq.id = idCounter++;
         tq.title = ref.value[2];
         tq.question = ref.value[3];
@@ -259,7 +260,7 @@ function processQuestions(_questions) {
             var an = ref.value[7].split(':');
             var l = an.length;
             for (var i = 0; i < l; i++) {
-                tq.answers.push(an[i]);
+                tq.answers.push(choices[i] + " " + an[i]);
             }
         } else {
             tq.answers.push('True');
