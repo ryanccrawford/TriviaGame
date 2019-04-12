@@ -10,12 +10,34 @@
     display: inline-block;
     
 }
-
+.bg-green{ background-color: rgb(100, 15, 117);}
+.bg-cyan {
+    background-color: rgb(25, 25, 85);
+}
+.bg-blue {
+    background-color: rgb(24, 44, 87);
+}
+.incorrectText {
+    font-size: 20px;
+    text-align: center;
+    color: red;
+    font-weight: bolder;
+    letter-spacing: 5px;
+    margin-top: 50px;
+}
+.correctText {
+    font-size: 20px;
+    text-align: center;
+    color: Green;
+    font-weight: bolder;
+    letter-spacing: 5px;
+    margin-top: 50px;
+}
 #gameBackground{
     background-color: black;
 }
 #titleBar{
-    background-color: black;
+    background-color: rgb(6, 85, 187);
     width:100%;
     height:80px;
 }

@@ -17,7 +17,7 @@
 
 
 //Globals
-var     timmerDisplay = $('#timmerDisplay'), correct = [], incorrect = [], tQuests, results = [], timeRef, running = false, score = 0, colorSpin = ['text-white bg-danger mb-3','text-white bg-warning mb-3','text-white bg-success mb-3'];
+var timmerDisplay = $('#timmerDisplay'), correct = [], incorrect = [], tQuests, results = [], timeRef, running = false, score = 0, colorSpin = ['text-white bg-blue mb-3','text-white bg-cyan mb-3','text-white bg-green mb-3'];
 var currentGameObj, questCount=0;
 const   QUESTION_TIMMER = 15, WAIT_DELAY = 2000, D = ':', TF = 'tf', MULTI = 'multi';
 
@@ -176,11 +176,15 @@ var game = function () {
             
             scoreIt(letterAnswer);
 
-            if(isGameOver()){
-                doGameOver();
+            if (isGameOver()) {
+                showGameOutcome();
+
+            } else {
+                currentGameObj._questionObject = getNextQuestion();
+                setTimeout(function () {
+                    currentGameObj.nextQuestion();
+                }, 4000)
             }
-            currentGameObj._questionObject = getNextQuestion();
-           currentGameObj.nextQuestion();
 
         },
         isAnswerCorrect: false,
@@ -190,13 +194,36 @@ var game = function () {
 };
 function scoreIt(_answer) {
     currentGameObj._questionObject.playerAnswer = _answer;
-    if (currentGameObj._questionObject.playerAnswer === currentGameObj._questionObject.answer) {
-        currentGameObj._questionObject.answer = true;
+    if (currentGameObj._questionObject.answer.startsWith(_answer)) {
+        currentGameObj._questionObject.isAnswerCorrect = true;
+        showCorrectMessage(currentGameObj._questionObject);
     } else {
         currentGameObj._questionObject.isAnswerCorrect = false;
+        showIncorrectMessage(currentGameObj._questionObject);
     }
     results.push(currentGameObj._questionObject);
 
+}
+function showCorrectMessage(_questObj) { 
+    $('.correct').hide()
+    $('.correct').text(_questObj.answer + ' IS THE CORRECT ANSWER!').addClass('correctText')
+    $('.correct').show()
+    $('.correct').show()
+    setTimeout(function () {
+        $('.correct').hide()
+    }, 4000)
+
+}
+function showIncorrectMessage(_questObj) {
+
+    $('.incorrect').hide()
+    $('.incorrect').text('INCORRECT ANSWER!').addClass('incorrectText')
+    var g = $('<span>').text(' THE CORRECT ANSWER IS ' + _questObj.answer)
+    $('.incorrect').append(g)
+    $('.incorrect').show()
+    setTimeout(function () {
+        $('.incorrect').hide()
+     }, 3000)
 }
 function processAnswers(_answers) {
     
@@ -274,9 +301,12 @@ function timeToString(t) {
 function tick() {
     if (running) {
         
-        if (timeCount <= 0) {
+        if (timeCount < 0) {
             running = false;
+            timeCount = 0
+            updateTimmerDisplay();
             timesUP();
+            
         } else {
             timeCount--;
             updateTimmerDisplay();
@@ -287,7 +317,7 @@ function setTimer(_time = 0) {
     if(_time != 0){
         time = _time;
     }
-    
+   
     running = false;
 }
 function updateTimmerDisplay(){
@@ -337,7 +367,7 @@ if(isGameOver()){
     }
 }
 function isGameOver(){
-    return triviaQuestions.length <= 0;
+    return triviaQuestions.length = 0;
 }
 function showGameOutcome(){
 
@@ -358,7 +388,27 @@ function showGameOutcome(){
 
     }
     var percentage = parseInt((correct / answersLength) * 100)
-
+    var p1 = $('<p>').text('You got ' + correct.toString() + ' correct.').css('color','red')
+    var p2 = $('<p>').text('You got ' + incorrect.toString() + ' incorrect.').css('color','green')
+    var p3 = $('<p>').text("That's " + percentage + "% ")
+    var message;
+    if (percentage > 90) {
+        message = "Wow! You must be pretty social. ";
+        
+    }
+    if (percentage > 80) {
+        message = "Not Bad! You must get out of the house every other day"
+    }
+    if (precentage > 70) {
+        message = "Just Like Everyone Else! You need to get out more!"
+    }
+    if (percentage > 60) {
+        message = "Sorry, but if you put the phone down for a day and left the house once a week, starting today, there might be hope for you!"
+    }
+    if (percentage <= 60) {
+        message = "Ouch! The bad news... You are beyond help. The good news... The planet will end soon anyways"
+    }
+    var p4 = $('<p>').text('')
     $('#messageOver').modal('show');
 
 }
