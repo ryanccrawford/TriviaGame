@@ -17,9 +17,9 @@
 
 
 //Globals
-var timmerDisplay = $('#timmerDisplay'), correct = [], incorrect = [], tQuests, results = [], timeRef, running = false, score = 0, colorSpin = ['text-white bg-blue mb-3','text-white bg-cyan mb-3','text-white bg-green mb-3'];
-var currentGameObj, questCount=0;
-const   QUESTION_TIMMER = 15, WAIT_DELAY = 2000, D = ':', TF = 'tf', MULTI = 'multi';
+var timmerDisplay = $('#timmerDisplay'), correct = [], incorrect = [], tQuests, results = [], timeRef, running = false, score = 0, colorSpin = ['text-white bg-blue mb-3', 'text-white bg-cyan mb-3', 'text-white bg-green mb-3'];
+var currentGameObj, questCount = 0;
+const QUESTION_TIMMER = 20, WAIT_DELAY = 2000, D = ':', TF = 'tf', MULTI = 'multi';
 
 var triviaQuestion = function () {
     return {
@@ -28,12 +28,12 @@ var triviaQuestion = function () {
         question: '',
         answers: [],
         guessed: '',
-        answer:''
+        answer: ''
     };
 }
 
 
-var idCounter = 0, triviaQuestions = [], answers='', questions = '', timeCount = 0, timerIsOn = false, time = 0;
+var idCounter = 0, triviaQuestions = [], answers = '', questions = '', timeCount = 0, timerIsOn = false, time = 0;
 
 $(document).ready(function () {
     $('#timmerDisplay').hide();
@@ -45,7 +45,7 @@ $(document).ready(function () {
                 $('#gameTitle').addClass('text-white');
                 $('#gameTitle').text('Trivia Bonanza').fadeIn(250);
                 processQuestions(data);
-            
+
                 $('#answerHolder').load("https://ryanccrawford.github.io/TriviaGame/assets/data/answers.txt", 'load=true',
                     function (answers, status) {
                         if (status === 'success') {
@@ -67,9 +67,9 @@ $(document).ready(function () {
         var trigger = $(event.relatedTarget)
         var modal = $(this)
         modal.find('.modal-title').text("Test")
-       console.log(this)
+        console.log(this)
     })
-    
+
 });
 var game = function () {
     return {
@@ -79,111 +79,107 @@ var game = function () {
         choices: null,
         answer: null,
         _questionObject: null,
-        nextQuestion: function(){
+        nextQuestion: function () {
             questCount++;
-            if(!running){
-            this._questionObject = getNextQuestion();
-            $('#multi-choice-answers').empty();
-            this.question = this._questionObject.question;
-            this.id= this._questionObject.id;
-            this.tile= questCount + ". " + this._questionObject.title;
-            this.choices= this._questionObject.answers;
-            this.answer= this._questionObject.answer;
-            var answerList = $('<ul>');
-            var color = Math.floor(Math.random()*3);
-            var bgColor = colorSpin[color];
-            $('#area').removeClass();
-            $('#area').addClass('card col');
-            $('#area').addClass(bgColor);
-            $(answerList).addClass('list-group list-group-flush');
-            $('#area').fadeIn();
-            for (let i = 0; i < this.choices.length; i++) {
-                var button = $('<li>');
-                $(button).addClass('text-dark');
-               
-               
-                if (this.choices.length == 2) { 
-                    if (i == 0) {
-                        $(button).attr('id', 'answer_T');
+            if (!running) {
+                $('#multi-choice-answers').empty();
+                this.question = this._questionObject.question;
+                this.id = this._questionObject.id;
+                this.tile = questCount + ". " + this._questionObject.title;
+                this.choices = this._questionObject.answers;
+                this.answer = this._questionObject.answer;
+                var answerList = $('<ul>');
+                var color = Math.floor(Math.random() * 3);
+                var bgColor = colorSpin[color];
+                $('#area').removeClass();
+                $('#area').addClass('card col');
+                $('#area').addClass(bgColor);
+                $(answerList).addClass('list-group list-group-flush');
+                $('#area').fadeIn();
+                for (let i = 0; i < this.choices.length; i++) {
+                    var button = $('<li>');
+                    $(button).addClass('text-dark');
+
+
+                    if (this.choices.length == 2) {
+                        if (i == 0) {
+                            $(button).attr('id', 'answer_T');
+                        } else {
+                            $(button).attr('id', 'answer_F');
+                        }
+
                     } else {
-                        $(button).attr('id', 'answer_F');
+                        $(button).attr('id', 'answer_' + i.toString());
+
                     }
-                    
-                } else {
-                    $(button).attr('id', 'answer_' + i.toString());
+
+
+                    var answerText = this.choices[i];
+                    // var icon = $('<img>');
+                    // $(icon).attr('src', '../images/check.gif');
+                    // $(icon).css('width', '64px');
+                    // $(button).before(icon);
+                    $(button).text(answerText.toUpperCase());
+                    $(button).click(this.bclick);
+                    $(button).addClass('list-group-item pointer-hover');
+                    $(answerList).append(button);
 
                 }
-                
-                
-                var answerText = this.choices[i];
-                // var icon = $('<img>');
-                // $(icon).attr('src', '../images/check.gif');
-                // $(icon).css('width', '64px');
-                // $(button).before(icon);
-                $(button).text(answerText.toUpperCase());
-                $(button).click(this.bclick);
-                $(button).addClass('list-group-item pointer-hover');
-                $(answerList).append(button);
+                $('#multi-choice-answers').append(answerList);
+                $('#question').text(this.question);
+                $('#qtitle').text(this.tile);
+
+                timeCount = QUESTION_TIMMER;
+                setTimer(timeCount);
+                startTimmer();
 
             }
-            $('#multi-choice-answers').append(answerList);
-            $('#question').text(this.question);
-            $('#qtitle').text(this.tile);
-       
-            timeCount = QUESTION_TIMMER;
-            setTimer(timeCount);   
-            startTimmer();
-
-        }
         },
         startGame: function () {
-            updateTimmerDisplay();
+
             timeCount = QUESTION_TIMMER;
-            setTimer(timeCount);
-            this.nextQuestion();
-            
+            next();
+
         },
         playerAnswer: '',
         bclick: function (event) {
             pauseTimmer();
-            $(timmerDisplay).fadeOut(250);
+            $(timmerDisplay).hide();
             $('#area').hide();
             var choice = event.currentTarget.id;
             var letterAnswer;
-            switch (choice){
+            switch (choice) {
                 case 'answer_0':
-                letterAnswer = 'A'
-                break;
+                    letterAnswer = 'A'
+                    break;
                 case 'answer_1':
-                letterAnswer = 'B'
-                break;
+                    letterAnswer = 'B'
+                    break;
                 case 'answer_2':
-                letterAnswer = 'C'
-                break;
+                    letterAnswer = 'C'
+                    break;
                 case 'answer_3':
-                letterAnswer = 'D'
-                break;
+                    letterAnswer = 'D'
+                    break;
                 case 'answer_T':
-                letterAnswer = 'T'
-                break;
+                    letterAnswer = 'T'
+                    break;
                 case 'answer_F':
-                letterAnswer = 'F'
-                break;
+                    letterAnswer = 'F'
+                    break;
                 default:
-                letterAnswer = 'none'
-                break;
+                    letterAnswer = 'none'
+                    break;
             }
-            
+
             scoreIt(letterAnswer);
 
             if (isGameOver()) {
                 showGameOutcome();
 
             } else {
-                currentGameObj._questionObject = getNextQuestion();
-                setTimeout(function () {
-                    currentGameObj.nextQuestion();
-                }, 4000)
+
+                setTimeout(next, 4000)
             }
 
         },
@@ -192,6 +188,11 @@ var game = function () {
     };
 
 };
+function next() {
+    currentGameObj._questionObject = getNextQuestion();
+    currentGameObj.nextQuestion();
+
+}
 function scoreIt(_answer) {
     currentGameObj._questionObject.playerAnswer = _answer;
     if (currentGameObj._questionObject.answer.startsWith(_answer)) {
@@ -204,42 +205,52 @@ function scoreIt(_answer) {
     results.push(currentGameObj._questionObject);
 
 }
-function showCorrectMessage(_questObj) { 
+function showCorrectMessage(_questObj) {
+    var a = getTF(_questObj.answer);
     $('.correct').hide()
-    $('.correct').text(_questObj.answer + ' IS THE CORRECT ANSWER!').addClass('correctText')
+    $('.correct').text(a + ' IS CORRECT!').addClass('correctText', 'correctMark')
     $('.correct').show()
     $('.correct').show()
     setTimeout(function () {
-        $('.correct').hide()
-    }, 4000)
+        $('.correct').fadeOut(500)
+    }, 3000)
 
 }
 function showIncorrectMessage(_questObj) {
-
+    var a = getTF(_questObj.answer);
     $('.incorrect').hide()
     $('.incorrect').text('INCORRECT ANSWER!').addClass('incorrectText')
-    var g = $('<span>').text(' THE CORRECT ANSWER IS ' + _questObj.answer)
+    var g = $('<span>').text(' THE CORRECT ANSWER IS ' + a)
     $('.incorrect').append(g)
     $('.incorrect').show()
     setTimeout(function () {
-        $('.incorrect').hide()
-     }, 3000)
+        $('.incorrect').fadeOut(500)
+    }, 3000)
+}
+function getTF(_answer) {
+    if (_answer.startsWith('T')) {
+        return "TRUE"
+    }
+    if (_answer.startsWith('F')) {
+        return "FALSE"
+    }
+    return _answer;
 }
 function processAnswers(_answers) {
-    
+
     answers = _answers;
     var re = /(([ABCDTF]\n)|(F\s.+))/g;
     var matches = _answers.matchAll(re);
     var ref;
     var ct = 0;
-   
+
     while (ref = matches.next()) {
-       
+
         if (!ref.value) {
             break;
         }
         triviaQuestions[ct++].answer = ref.value[1];
-    }   
+    }
 }
 function processQuestions(_questions) {
     questions = _questions;
@@ -252,7 +263,7 @@ function processQuestions(_questions) {
             break;
         }
         var tq = new triviaQuestion();
-        var choices = ['A.','B.','C.','D.']
+        var choices = ['A.', 'B.', 'C.', 'D.']
         tq.id = idCounter++;
         tq.title = ref.value[2];
         tq.question = ref.value[3];
@@ -277,37 +288,36 @@ function startGame() {
     updateTimmerDisplay();
     results = [];
     currentGameObj = new game();
-    
+
     currentGameObj.startGame();
-    
+
 }
-function getNextQuestion(){
-    triviaQuestions.reverse();
+function getNextQuestion() {
+    // triviaQuestions.reverse();
     return triviaQuestions.pop();
-   
+
 }
 
 
 function timeToString(t) {
-  
+
     var seconds = t.toString();
 
     if (seconds < 10) {
         seconds = "0" + seconds;
-    }else{
+    } else {
 
     }
     return seconds + ' <span class="seconds"> seconds remaining.</span>';
 }
 function tick() {
     if (running) {
-        
-        if (timeCount < 0) {
+
+        if (timeCount == 0) {
+            clearInterval(timeRef)
             running = false;
-            timeCount = 0
-            updateTimmerDisplay();
             timesUP();
-            
+
         } else {
             timeCount--;
             updateTimmerDisplay();
@@ -315,13 +325,13 @@ function tick() {
     }
 }
 function setTimer(_time = 0) {
-    if(_time != 0){
+    if (_time != 0) {
         time = _time;
     }
-   
+
     running = false;
 }
-function updateTimmerDisplay(){
+function updateTimmerDisplay() {
     var t = timeToString(timeCount);
     $(timmerDisplay).html(t);
 
@@ -329,12 +339,18 @@ function updateTimmerDisplay(){
 
 function startTimmer() {
     if (!running) {
-        
+
         running = true;
         timeRef = setInterval(tick, 1000);
         $(timmerDisplay).fadeIn(250);
+    } else {
+        running = false;
+        clearInterval(timeRef)
+        running = true;
+        $(timmerDisplay).fadeIn(250);
+        timeRef = setInterval(tick, 1000);
     }
-    
+
 }
 function pauseTimmer() {
     if (running) {
@@ -347,35 +363,37 @@ function resetTimmer() {
     timeCount = parseInt(QUESTION_TIMMER);
 }
 function resetScreen() {
-   $('#area').hide();
-   $('#question').text('');
-   $('#multi-choice-answers').text('');
-   $('#tf-answers').text('');
-   $('#timmerDisplay').text('');
-  
-}
-function timesUP(){
-//TODO: function to fire when time is up. Needs to load the next question if there is one
-$('#area').hide();
-    clearInterval(timeRef);
-    scoreIt('TimeOut');
-if(isGameOver()){
-        showGameOutcome();
+    $('#area').hide();
+    $('#question').text('');
+    $('#multi-choice-answers').text('');
+    $('#tf-answers').text('');
+    $('#timmerDisplay').empty();
 
-    }else{
-         
-        currentGameObj.startGame();
+}
+function timesUP() {
+    //TODO: function to fire when time is up. Needs to load the next question if there is one
+
+    $('#area').fadeOut(250);
+    $(timmerDisplay).fadeOut(250);
+
+    if (isGameOver()) {
+
+        setTimeout(showGameOutcome, 5000);
+
+    } else {
+        scoreIt('TimeOut');
+        setTimeout(next, 5000);
     }
 }
-function isGameOver(){
-    return triviaQuestions.length = 0;
+function isGameOver() {
+    return triviaQuestions.length == 0;
 }
-function showGameOutcome(){
+function showGameOutcome() {
 
     var correct, incorrect, timedout;
     var answersLength = results.length
-    for (let i = 0; i < answersLength; i++){
-      var yourGuess =  results[i].playerAnswer
+    for (let i = 0; i < answersLength; i++) {
+        var yourGuess = results[i].playerAnswer
         var rightAnswer = results[i].answer
         if (yourGuess === 'TimeOut') {
             timedout++
@@ -389,13 +407,14 @@ function showGameOutcome(){
 
     }
     var percentage = parseInt((correct / answersLength) * 100)
-    var p1 = $('<p>').text('You got ' + correct.toString() + ' correct.').css('color','red')
-    var p2 = $('<p>').text('You got ' + incorrect.toString() + ' incorrect.').css('color','green')
+    var p1 = $('<p>').text('You got ' + correct.toString() + ' correct.').css('color', 'red')
+    var p2 = $('<p>').text('You got ' + incorrect.toString() + ' incorrect.').css('color', 'green')
     var p3 = $('<p>').text("That's " + percentage + "% ")
+    $('.modal-body').append(p1).append(p2).append(p3);
     var message;
     if (percentage > 90) {
         message = "Wow! You must be pretty social. ";
-        
+
     }
     if (percentage > 80) {
         message = "Not Bad! You must get out of the house every other day"
@@ -409,7 +428,8 @@ function showGameOutcome(){
     if (percentage <= 60) {
         message = "Ouch! The bad news... You are beyond help. The good news... The planet will end soon anyways"
     }
-    var p4 = $('<p>').text('')
+    var p4 = $('<p>').text(message)
+    $('.modal-body').append(p1).append(p2).append(p3).append(p4);
     $('#messageOver').modal('show');
 
 }
