@@ -62,6 +62,13 @@ $(document).ready(function () {
             }
         }
     );
+
+    $('#messageOver').on('show.bs.modal', function (event) {
+        var trigger = $(event.relatedTarget)
+        var modal = $(this)
+        modal.find('.modal-title').text("Test")
+       console.log(this)
+    })
     
 });
 var game = function () {
@@ -93,13 +100,27 @@ var game = function () {
             for (let i = 0; i < this.choices.length; i++) {
                 var button = $('<li>');
                 $(button).addClass('text-dark');
-                $(button).attr('id', 'answer_' + i.toString());
+               
+               
+                if (this.choices.length == 2) { 
+                    if (i == 0) {
+                        $(button).attr('id', 'answer_T');
+                    } else {
+                        $(button).attr('id', 'answer_F');
+                    }
+                    
+                } else {
+                    $(button).attr('id', 'answer_' + i.toString());
+
+                }
+                
+                
                 var answerText = this.choices[i];
-                var icon = $('<img>');
-                $(icon).attr('src', '../images/check.gif');
-                $(icon).css('width', '64px');
-                $(button).before(icon);
-                $(button).text(answerText);
+                // var icon = $('<img>');
+                // $(icon).attr('src', '../images/check.gif');
+                // $(icon).css('width', '64px');
+                // $(button).before(icon);
+                $(button).text(answerText.toUpperCase());
                 $(button).click(this.bclick);
                 $(button).addClass('list-group-item pointer-hover');
                 $(answerList).append(button);
@@ -142,17 +163,18 @@ var game = function () {
                 case 'answer_3':
                 letterAnswer = 'D'
                 break;
+                case 'answer_T':
+                letterAnswer = 'T'
+                break;
+                case 'answer_F':
+                letterAnswer = 'F'
+                break;
                 default:
-
+                letterAnswer = 'none'
+                break;
             }
             
-            currentGameObj._questionObject.playerAnswer = letterAnswer;
-            if( currentGameObj._questionObject.playerAnswer ===  currentGameObj._questionObject.answer){
-               currentGameObj._questionObject.answer = true;
-            }else{
-                currentGameObj._questionObject.isAnswerCorrect = false;
-            }
-            results.push(currentGameObj._questionObject);
+            scoreIt(letterAnswer);
 
             if(isGameOver()){
                 doGameOver();
@@ -166,6 +188,16 @@ var game = function () {
     };
 
 };
+function scoreIt(_answer) {
+    currentGameObj._questionObject.playerAnswer = _answer;
+    if (currentGameObj._questionObject.playerAnswer === currentGameObj._questionObject.answer) {
+        currentGameObj._questionObject.answer = true;
+    } else {
+        currentGameObj._questionObject.isAnswerCorrect = false;
+    }
+    results.push(currentGameObj._questionObject);
+
+}
 function processAnswers(_answers) {
     
     answers = _answers;
@@ -294,7 +326,8 @@ function resetScreen() {
 function timesUP(){
 //TODO: function to fire when time is up. Needs to load the next question if there is one
 $('#area').hide();
-clearInterval(timeRef);
+    clearInterval(timeRef);
+    scoreIt('TimeOut');
 if(isGameOver()){
         showGameOutcome();
 
@@ -308,7 +341,24 @@ function isGameOver(){
 }
 function showGameOutcome(){
 
-    //TODO: function for modal box popup of game outcome
+    var correct, incorrect, timedout;
+    var answersLength = results.length
+    for (let i = 0; i < answersLength; i++){
+      var yourGuess =  results[i].playerAnswer
+        var rightAnswer = results[i].answer
+        if (yourGuess === 'TimeOut') {
+            timedout++
+            continue;
+        }
+        if (yourGuess === rightAnswer) {
+            correct++
+            continue;
+        }
+        incorrect++
+
+    }
+    var percentage = parseInt((correct / answersLength) * 100)
+
     $('#messageOver').modal('show');
 
 }
