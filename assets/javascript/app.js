@@ -19,22 +19,24 @@
 //Globals
 var timmerDisplay = $('#timmerDisplay'), correct = [], incorrect = [], tQuests, results = [], timeRef, running = false, score = 0, colorSpin = ['text-white bg-blue mb-3', 'text-white bg-cyan mb-3', 'text-white bg-green mb-3'];
 var currentGameObj, questCount = 0;
+//Global Conts
 const QUESTION_TIMMER = 20, WAIT_DELAY = 2000, D = ':', TF = 'tf', MULTI = 'multi';
-
+// question object
 var triviaQuestion = function () {
     return {
         id: 0,
         title: '',
         question: '',
-        answers: [],
-        guessed: '',
-        answer: ''
+        answers: [], //hold mutiple coice and True False choices
+        guessed: '', //holds players answer
+        answer: '' //holds real answer
     };
 }
 
-
+//More Globals
 var idCounter = 0, triviaQuestions = [], answers = '', questions = '', timeCount = 0, timerIsOn = false, time = 0;
 
+//Waits for document to load 
 $(document).ready(function () {
     $('#timmerDisplay').hide();
     $('#gameTitle').hide();
@@ -71,6 +73,7 @@ $(document).ready(function () {
     })
 
 });
+//Game object that stores the current display logic and creates the click events for the dynamically created game elements
 var game = function () {
     return {
         id: null,
@@ -131,7 +134,9 @@ var game = function () {
 
                 timeCount = QUESTION_TIMMER;
                 setTimer(timeCount);
-                startTimmer();
+                updateTimmerDisplay();
+                 $(timmerDisplay).fadeIn(250);
+               setTimeout(startTimmer, 500);
 
             }
         },
@@ -188,11 +193,13 @@ var game = function () {
     };
 
 };
+// Stores and loads the next qestion into the game object
 function next() {
     currentGameObj._questionObject = getNextQuestion();
     currentGameObj.nextQuestion();
 
 }
+// checks and stores the players answers
 function scoreIt(_answer) {
     currentGameObj._questionObject.playerAnswer = _answer;
     if (currentGameObj._questionObject.answer.startsWith(_answer)) {
@@ -205,6 +212,7 @@ function scoreIt(_answer) {
     results.push(currentGameObj._questionObject);
 
 }
+// Shows Correct answer message
 function showCorrectMessage(_questObj) {
     var a = getTF(_questObj.answer);
     $('.correct').hide()
@@ -216,6 +224,7 @@ function showCorrectMessage(_questObj) {
     }, 3000)
 
 }
+//Displays Message for Wron Answers
 function showIncorrectMessage(_questObj) {
     var a = getTF(_questObj.answer);
     $('.incorrect').hide()
@@ -227,6 +236,7 @@ function showIncorrectMessage(_questObj) {
         $('.incorrect').fadeOut(500)
     }, 3000)
 }
+//Used to decode True False Answers
 function getTF(_answer) {
     if (_answer.startsWith('T')) {
         return "TRUE"
@@ -236,6 +246,7 @@ function getTF(_answer) {
     }
     return _answer;
 }
+//Custom Regex Parser to parse answers file
 function processAnswers(_answers) {
 
     answers = _answers;
@@ -252,6 +263,7 @@ function processAnswers(_answers) {
         triviaQuestions[ct++].answer = ref.value[1];
     }
 }
+//Custom Regex Parser for Questions File
 function processQuestions(_questions) {
     questions = _questions;
     var re = /((.*\S*):+(.*\S*):+)((\[(.*)\]),(.*:+.*:+.*:+.*)|(\[(.*)\]))\n/gim;
@@ -282,6 +294,7 @@ function processQuestions(_questions) {
 
 
 }
+//Start up and Init Game
 function startGame() {
 
     resetScreen();
@@ -292,13 +305,16 @@ function startGame() {
     currentGameObj.startGame();
 
 }
+//Gets the next question out of the que 
 function getNextQuestion() {
     // triviaQuestions.reverse();
     return triviaQuestions.pop();
 
 }
 
+//Timer Functions ------------------------------------------------------------------
 
+//Converts the counter into the displayed countdown digits
 function timeToString(t) {
 
     var seconds = t.toString();
@@ -310,6 +326,7 @@ function timeToString(t) {
     }
     return seconds + ' <span class="seconds"> seconds remaining.</span>';
 }
+//Timer counter
 function tick() {
     if (running) {
 
@@ -324,6 +341,7 @@ function tick() {
         }
     }
 }
+//Sets the initial count down time
 function setTimer(_time = 0) {
     if (_time != 0) {
         time = _time;
@@ -331,37 +349,41 @@ function setTimer(_time = 0) {
 
     running = false;
 }
+//Updates the screen to shows seconds left
 function updateTimmerDisplay() {
     var t = timeToString(timeCount);
     $(timmerDisplay).html(t);
 
 }
-
+//Start the global timer
 function startTimmer() {
     if (!running) {
 
         running = true;
         timeRef = setInterval(tick, 1000);
-        $(timmerDisplay).fadeIn(250);
+       
     } else {
         running = false;
         clearInterval(timeRef)
         running = true;
-        $(timmerDisplay).fadeIn(250);
         timeRef = setInterval(tick, 1000);
     }
 
 }
+//Not used but here incase I need a use for it, I just puses the timer
 function pauseTimmer() {
     if (running) {
         clearInterval(timeRef);
         running = false;
     }
 }
+// resets the timer for the next question
 function resetTimmer() {
     pauseTimmer();
     timeCount = parseInt(QUESTION_TIMMER);
 }
+
+//Clears the elements on the screen
 function resetScreen() {
     $('#area').hide();
     $('#question').text('');
@@ -370,6 +392,7 @@ function resetScreen() {
     $('#timmerDisplay').empty();
 
 }
+//called when timer hits 0 on all questions
 function timesUP() {
     //TODO: function to fire when time is up. Needs to load the next question if there is one
 
@@ -385,12 +408,14 @@ function timesUP() {
         setTimeout(next, 5000);
     }
 }
+//chesks to see if the all questions have been answerd
 function isGameOver() {
     return triviaQuestions.length == 0;
 }
+//Show end of game score and rankings Dialog. Talleies up the final score 
 function showGameOutcome() {
 
-    var correct, incorrect, timedout;
+    var correct = 0, incorrect = 0, timedout = 0;
     var answersLength = results.length
     for (let i = 0; i < answersLength; i++) {
         var yourGuess = results[i].playerAnswer
@@ -399,7 +424,7 @@ function showGameOutcome() {
             timedout++
             continue;
         }
-        if (yourGuess === rightAnswer) {
+        if (yourGuess.startsWith(rightAnswer)) {
             correct++
             continue;
         }
@@ -407,32 +432,41 @@ function showGameOutcome() {
 
     }
     var percentage = parseInt((correct / answersLength) * 100)
-    var p1 = $('<p>').text('You got ' + correct.toString() + ' correct.').css('color', 'red')
-    var p2 = $('<p>').text('You got ' + incorrect.toString() + ' incorrect.').css('color', 'green')
-    var p3 = $('<p>').text("That's " + percentage + "% ")
+    var p1 = $('<p>').text('You got ' + correct + ' correct.').css('color', 'red')
+    var p2 = $('<p>').text('You got ' + incorrect + ' incorrect.').css('color', 'green')
+    var p3 = $('<p>').text('You got ' + timedout + ' incorrect.').css('color', 'red')
+    var p4 = $('<p>').text("That's " + percentage + "% ")
     $('.modal-body').append(p1).append(p2).append(p3);
     var message;
     if (percentage > 90) {
-        message = "Wow! You must be pretty social. ";
+        message = "Wow! You Are Really Smart!. ";
 
     }
     if (percentage > 80) {
-        message = "Not Bad! You must get out of the house every other day"
+        message = "Not Bad! You Not Too Smart and Not Too Not Smart. Perfect Balance."
     }
-    if (precentage > 70) {
-        message = "Just Like Everyone Else! You need to get out more!"
+    if (percentage > 70) {
+        message = "It's True, You Are Just Like Everyone Else. Average Joe. With a Little Work You Could be Noticed As Unique!"
     }
     if (percentage > 60) {
         message = "Sorry, but if you put the phone down for a day and left the house once a week, starting today, there might be hope for you!"
     }
     if (percentage <= 60) {
-        message = "Ouch! The bad news... You are beyond help. The good news... The planet will end soon anyways"
+        message = "Were you just pressing keys? Ouch! The bad news... You are beyond help. The good news... The planet will end soon anyways"
     }
-    var p4 = $('<p>').text(message)
-    $('.modal-body').append(p1).append(p2).append(p3).append(p4);
-    $('#messageOver').modal('show');
 
+    $('#messageOver').on('show.bs.modal', function (event) {
+        var trigger = $(event.relatedTarget);
+        var modal = $(this);
+        modal.find('.modal-title').text("Game Over");
+        var p4 = $('<p>').text(message);
+        modal.find('.modal-body').append(p1).append(p2).append(p3).append(p4);
+       
+
+    })
+     $('#messageOver').modal('show');
 }
+//TODO: incase ther is a network Error loading the game data. Not really needed for this project
 function doLoadError() {
     //TODO: NETWORK ERROR MESSAGE HERE
 
