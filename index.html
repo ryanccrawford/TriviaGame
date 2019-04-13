@@ -31,14 +31,41 @@
         </div>
     </div>
       <div id="titleBar" class="container-fluid">
-          <div id="gameTitle"></div>
+          <div id="gameTitle" style="display:none;">
+            <h1 class="text-white">Gender Smart</h1>
+            <h5><small class="text-muted">A trivia game to learn stuff you didn't want to know.</small></h5>
+        </div>
       </div>
       <div class="container">
           <div class="container-fluid">
               <div class="row">
                   <div class="col-12">
-                      <div id="startScreen">
-
+                      <div id="startScreen" style="display: none;">
+                        <div class="jumbotron introBox mt-4">
+                            <h1 class="gameDisplay text-center">Gender Smart</h1>
+                            <h2 class="text-center text-white">How Gender Smart Are You?</h2>
+                            <h3 class="small text-center text-white">Things about the other sex you never knew.</h3>
+                            <button class="intro-button" data-bname="start">Start Game</button>
+                            <button class="intro-button" data-bname="how-to-play">How to Play</button>
+                            <button class="intro-button" data-bname="exit">Leave Game</button>
+                        </div>
+                        <div id="jumbotron introBox mt-4" style="display: none;color:white;">
+                            <h1 class="Display-4 intro-title">How to Play</h1>
+                            <p class="lead">From the 'Intro Screen':</p>
+                                <ol>
+                                    <li>Press the 'Start Game' button. (There will be a short pause)</li>
+                                    <li>A game timer and question box will display.</li>
+                                    <li>Click on one of the choices below the question to answer the question</li>
+                                </ol>
+                            <p>Read the question and before the timmer expires, pick one of the listed answers. If the timmer runs out 
+                                of time before you select an answer, you will get the question wrong then move on to the next 
+                                question until all questions are presented</p>
+                            <p>If you answer incorrectly, the correct answer will display. If you get it correct you will be congradulated, then the 
+                                game will continue until all questions are answered.</p> <h2>Finishing the Game</h2><p>Once you finish, your
+                                game stats will be displayed to show you how well you did.</p>
+                            <p class="text-muted small">Click the back button to return to the previous screen. </p>
+                            <button id="exitHowTo"><i class="fa fa-step-backward" aria-hidden="true"></i> Go Back</button>
+                        </div>
                       </div>
                     </div>
               </div>

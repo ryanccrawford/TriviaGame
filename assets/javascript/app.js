@@ -40,39 +40,84 @@ var idCounter = 0, triviaQuestions = [], answers = '', questions = '', timeCount
 $(document).ready(function () {
     $('#timmerDisplay').hide();
     $('#gameTitle').hide();
-    $('#gameTitle').load("https://ryanccrawford.github.io/TriviaGame/assets/data/questions.txt", 'load=true',
-        function (data, status) {
+    $('#titleBar').hide();
+    doStartScreen();
+    $('#startButton').click(function(){
+       
+        $('#gameTitle').load("https://ryanccrawford.github.io/TriviaGame/assets/data/questions.txt", 'load=true',
+            function (data, status) {
 
-            if (status === 'success') {
-                $('#gameTitle').addClass('text-white');
-                $('#gameTitle').text('Trivia Bonanza').fadeIn(250);
-                processQuestions(data);
+                if (status === 'success') {
+                    $('#gameTitle').addClass('text-white');
+                    $('#gameTitle').text('Trivia Bonanza').fadeIn(250);
+                    processQuestions(data);
 
-                $('#answerHolder').load("https://ryanccrawford.github.io/TriviaGame/assets/data/answers.txt", 'load=true',
-                    function (answers, status) {
-                        if (status === 'success') {
-                            $('#answerHolder').empty();
-                            processAnswers(answers);
-                            setTimeout(startGame, 2000);
-                        } else {
-                            doLoadError();
+                    $('#answerHolder').load("https://ryanccrawford.github.io/TriviaGame/assets/data/answers.txt", 'load=true',
+                        function (answers, status) {
+                            if (status === 'success') {
+                                $('#answerHolder').empty();
+                                processAnswers(answers);
+                                setTimeout(startGame, 2000);
+                            } else {
+                                doLoadError();
+                            }
                         }
-                    }
-                );
-            } else {
-                doLoadError();
+                    );
+                } else {
+                    doLoadError();
+                }
             }
-        }
-    );
+        );
 
-    $('#messageOver').on('show.bs.modal', function (event) {
-        var trigger = $(event.relatedTarget)
-        var modal = $(this)
-        modal.find('.modal-title').text("Test")
-        console.log(this)
+        $('#messageOver').on('show.bs.modal', function (event) {
+            var trigger = $(event.relatedTarget)
+            var modal = $(this)
+            modal.find('.modal-title').text("Test")
+            console.log(this)
+        })
+    })
+});
+
+//start screen creator
+function doStartScreen() {
+    var startScreen = $('#startScreen') 
+    $(startScreen).fadeIn(500)//grab start screen div
+    $('.intro-button').click(function () {
+        var buttonClicked = $(this).attr('data-bname')
+        if (buttonClicked === 'start') {
+            $(startScreen).fadeOut(500)
+            setTimeout(startTheGame, 250)
+        }
+        if (buttonClicked === 'how-to-play') {
+            $(startScreen).fadeOut(500)
+            setTimeout(howToPlay, 250)
+        }
+        if (buttonClicked === 'exit') {
+            $(startScreen).fadeOut(500)
+            exitGame();
+        }
+    })
+}
+function startTheGame() {
+    setTimeout(function () {
+        $('#gameTitle').fadeIn(100);
+        $('#titleBar').fadeIn(250);
+        startGame();
+    }, 250)      
+}
+function howToPlay() {
+    var howTo = $('#howToPlayBox')
+    $(howTo).fadeIn(500);
+    $('#exitHowTo').click(function () {
+        $(howTo).fadeOut(500);
+        setTimeout(doStartScreen, 700);
     })
 
-});
+}
+function exitGame() {
+    
+
+}
 //Game object that stores the current display logic and creates the click events for the dynamically created game elements
 var game = function () {
     return {
