@@ -18,7 +18,7 @@
 
 //Globals
 var timmerDisplay = $('#timmerDisplay'), correct = [], incorrect = [], tQuests, results = [], timeRef, running = false, score = 0, colorSpin = ['text-white bg-blue mb-3', 'text-white bg-cyan mb-3', 'text-white bg-green mb-3'];
-var currentGameObj, questCount = 0;
+var currentGameObj, questCount = 0, timerCircum = 0; timerCurrentPosition = 0, circumHasBeenSet = false; incramentLength = 0;
 //Global Conts
 const QUESTION_TIMMER = 20, WAIT_DELAY = 2000, D = ':', TF = 'tf', MULTI = 'multi';
 // question object
@@ -41,41 +41,8 @@ $(document).ready(function () {
     $('#timmerDisplay').hide();
     $('#gameTitle').hide();
     $('#titleBar').hide();
+    $('#howToBox').hide();
     doStartScreen();
-    $('#startButton').click(function(){
-       
-        $('#gameTitle').load("https://ryanccrawford.github.io/TriviaGame/assets/data/questions.txt", 'load=true',
-            function (data, status) {
-
-                if (status === 'success') {
-                    $('#gameTitle').addClass('text-white');
-                    $('#gameTitle').text('Trivia Bonanza').fadeIn(250);
-                    processQuestions(data);
-
-                    $('#answerHolder').load("https://ryanccrawford.github.io/TriviaGame/assets/data/answers.txt", 'load=true',
-                        function (answers, status) {
-                            if (status === 'success') {
-                                $('#answerHolder').empty();
-                                processAnswers(answers);
-                                setTimeout(startGame, 2000);
-                            } else {
-                                doLoadError();
-                            }
-                        }
-                    );
-                } else {
-                    doLoadError();
-                }
-            }
-        );
-
-        $('#messageOver').on('show.bs.modal', function (event) {
-            var trigger = $(event.relatedTarget)
-            var modal = $(this)
-            modal.find('.modal-title').text("Test")
-            console.log(this)
-        })
-    })
 });
 
 //start screen creator
@@ -99,14 +66,44 @@ function doStartScreen() {
     })
 }
 function startTheGame() {
+    
     setTimeout(function () {
         $('#gameTitle').fadeIn(100);
         $('#titleBar').fadeIn(250);
-        startGame();
-    }, 250)      
+
+    }, 250) 
+    $('#questionHolder').empty();
+    $('#answerHolder').empty();
+    $('#questionHolder').load("https://ryanccrawford.github.io/TriviaGame/assets/data/questions.txt", 'load=true',
+            function (data, status) {
+
+                if (status === 'success') {
+                    $('#questionHolder').empty();
+                 processQuestions(data);
+
+                    $('#answerHolder').load("https://ryanccrawford.github.io/TriviaGame/assets/data/answers.txt", 'load=true',
+                        function (answers, status) {
+                            if (status === 'success') {
+                                $('#answerHolder').empty();
+                                processAnswers(answers); 
+                                setTimeout(startGame, 2000);
+                            } else {
+                                doLoadError();
+                            }
+                        }
+                    );
+                } else {
+                    doLoadError();
+                }
+            }
+        );
+
+        
+    
+      
 }
 function howToPlay() {
-    var howTo = $('#howToPlayBox')
+    var howTo = $('#howToBox')
     $(howTo).fadeIn(500);
     $('#exitHowTo').click(function () {
         $(howTo).fadeOut(500);
@@ -397,6 +394,21 @@ function setTimer(_time = 0) {
 //Updates the screen to shows seconds left
 function updateTimmerDisplay() {
     var t = timeToString(timeCount);
+    //use the parent > child selector to get the child circle element of the parent svg element 
+    // use C=2πr to find the length of the line that will wrap the circle
+    //timerCircum = 0; timerCurrentPosition = 0;
+    var circleOutline = $('#circleCount > circle')
+    if (!circumHasBeenSet) {
+        circumHasBeenSet = true;
+        var timerRadius = $(circleOutline).attr('r');
+        timerCircum = 2 * 3.14 * parseFloat(timerRadius);
+        $(circleOutline).css('stroke-dasharray', parseInt(timerCircum).toString())
+        incramentLength = timerCircum / 20
+        
+    }
+    
+    timerCurrentPosition -= incramentLength
+    $(circleOutline).css('stroke-dashoffset', parseInt(timerCurrentPosition).toString())
     $(timmerDisplay).html(t);
 
 }
@@ -414,8 +426,7 @@ function startTimmer() {
         timeRef = setInterval(tick, 1000);
     }
 
-}
-//Not used but here incase I need a use for it, I just puses the timer
+}//Not used but here incase I need a use for it, I just puses the timer
 function pauseTimmer() {
     if (running) {
         clearInterval(timeRef);

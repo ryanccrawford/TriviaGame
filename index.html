@@ -5,10 +5,14 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
- 
+    
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
     <link rel="stylesheet" href="assets/css/style.css">
+
 </head>
   <body id="gameBackground">
     <div id="messageOver" class="modal" tabindex="-1" role="dialog">
@@ -32,47 +36,60 @@
     </div>
       <div id="titleBar" class="container-fluid">
           <div id="gameTitle" style="display:none;">
-            <h1 class="text-white">Gender Smart</h1>
-            <h5><small class="text-muted">A trivia game to learn stuff you didn't want to know.</small></h5>
+            <h1 class="text-white">ARE YOU HUMAN?</h1>
+            <h5><small class="text-muted">How much you don't know about human behavior.</small></h5>
         </div>
       </div>
       <div class="container">
           <div class="container-fluid">
               <div class="row">
                   <div class="col-12">
-                      <div id="startScreen" style="display: none;">
+                    <div id="startScreen" style="display: none;">
                         <div class="jumbotron introBox mt-4">
-                            <h1 class="gameDisplay text-center">Gender Smart</h1>
-                            <h2 class="text-center text-white">How Gender Smart Are You?</h2>
-                            <h3 class="small text-center text-white">Things about the other sex you never knew.</h3>
+                            <h1 class="gameDisplay text-center">ARE YOU HUMAN?</h1>
+                            <h2 class="text-center text-white">How Human Are You?</h2>
+                            <h3 class="small text-center text-white game-subtitle">How much you don't know about human behavior.</h3>
                             <button class="intro-button" data-bname="start">Start Game</button>
                             <button class="intro-button" data-bname="how-to-play">How to Play</button>
                             <button class="intro-button" data-bname="exit">Leave Game</button>
                         </div>
-                        <div id="jumbotron introBox mt-4" style="display: none;color:white;">
-                            <h1 class="Display-4 intro-title">How to Play</h1>
-                            <p class="lead">From the 'Intro Screen':</p>
-                                <ol>
+                    </div>
+                    <div id="howToBox">
+                            <div class="jumbotron introBox mt-4" style="color:white;">
+                            <h1 class="intro-title">How to Play</h1>
+                            <p class="how-text">From the 'Intro Screen':</p>
+                                <ol class="how-list">
                                     <li>Press the 'Start Game' button. (There will be a short pause)</li>
                                     <li>A game timer and question box will display.</li>
                                     <li>Click on one of the choices below the question to answer the question</li>
                                 </ol>
-                            <p>Read the question and before the timmer expires, pick one of the listed answers. If the timmer runs out 
+                            <p class="how-text">Read the question and before the timmer expires, pick one of the listed answers. If the timmer runs out 
                                 of time before you select an answer, you will get the question wrong then move on to the next 
                                 question until all questions are presented</p>
-                            <p>If you answer incorrectly, the correct answer will display. If you get it correct you will be congradulated, then the 
-                                game will continue until all questions are answered.</p> <h2>Finishing the Game</h2><p>Once you finish, your
+                            <p class="how-text">If you answer incorrectly, the correct answer will display. If you get it correct you will be congradulated, then the 
+                                game will continue until all questions are answered.</p> <h2 class="how-text-heading2">Finishing the Game</h2><p class="how-text">Once you finish, your
                                 game stats will be displayed to show you how well you did.</p>
-                            <p class="text-muted small">Click the back button to return to the previous screen. </p>
-                            <button id="exitHowTo"><i class="fa fa-step-backward" aria-hidden="true"></i> Go Back</button>
+                            <p class="how-text small">Click the back button to return to the previous screen. </p>
+                            <button id="exitHowTo" class="btn text-white bg-dark"><i class="fa fa-step-backward" aria-hidden="true"></i> Go Back</button>
                         </div>
-                      </div>
                     </div>
+                </div>
               </div>
               <div class="row">
                   <div class="col">
-                      <div id="timmerDisplay" class="text-white">
-                      </div>
+                     
+                    <div id="countdown">
+                        <div id="timmerDisplay" class="text-white">
+                        </div>
+                        <!-- This is a svg graphic circle to be animated as the ms in the second timer 
+                            the cy and cx are the x y center of the circle and the r is the radius of the circle in px
+                        we need this to be inside the countdown div so we can absolute position the numerical secs-->
+
+                        <svg id="circleCount">
+                            <circle r="40" cx="40" cy="40"></circle>
+                        </svg>
+                    
+                    </div>
                   </div>
               </div>
           </div>
@@ -102,6 +119,7 @@
               </div>
           </div>
       </div>
+    <div id="questionHolder" style="display:none;"></div>
       <div id="answerHolder" style="display:none;"></div>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
