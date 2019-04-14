@@ -59,11 +59,7 @@
         margin: 15px;
 }
 
-#timmerDisplay {
-    font-size: 60px;
-    font-family: 'count' !important;
-    display: inline-block;
-}
+
 
 #gameTitle {
     font-size: 50px;
@@ -125,9 +121,9 @@
     font-size: 20px;
 }
 .list-group-item {
-    font-size: 2rem;
+    font-size: 1.2rem;
     text-align: center;
-    padding: 14px;
+    padding: 10px;
 }
 
 .list-group-item:hover {
@@ -144,7 +140,54 @@
     font-size: 20px;
 }
 #question{
-    letter-spacing: 4px;
-    font-size: 23px !important;
+    letter-spacing: 3px;
+    font-size: 18px !important;
     font-family: sans-serif;
+}
+#timer {
+    position: relative;
+    margin: auto;
+    margin-top: 0;
+    height: 100px;
+    width: 100px;
+    text-align: center;
+}
+
+#timer-number {
+    color: white;
+    display: inline-block;
+        line-height: 50px;
+        font-size: 28px;
+}
+.below10 {
+    color: rgb(240, 121, 121) !important;
+    
+}
+
+svg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    transform: rotateY(-180deg) rotateZ(-90deg);
+}
+
+svg .circle {
+    stroke-dasharray: 160px;
+    stroke-dashoffset: 0px;
+    stroke-width: 3px;
+    stroke: white;
+    fill: none;
+    animation: countdown 22s linear 1 forwards;
+}
+
+@keyframes countdown {
+    from {
+        stroke-dashoffset: 0px;
+    }
+
+    to {
+        stroke-dashoffset: 160px;
+    }
 }

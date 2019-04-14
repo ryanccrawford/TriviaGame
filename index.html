@@ -28,8 +28,7 @@
                     <p id="modalMessage"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" data-ok="modal">Ok</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -50,11 +49,13 @@
                             <h2 class="text-center text-white">How Human Are You?</h2>
                             <h3 class="small text-center text-white game-subtitle">How much you don't know about human behavior.</h3>
                             <button id="spage1" class="intro-button">Start Game</button>
-                           
+                            <button id="spage2" class="intro-button">How to Play</button>
                             <button id="spage3" class="intro-button">Leave Game</button>
                         </div>
                     </div>
-                    <div id="howToBox">
+                  </div>
+                <div class="col-12">
+                    <div id="howToBox" style="display: none;">
                             <div class="jumbotron introBox mt-4" style="color:white;">
                             <h1 class="intro-title">How to Play</h1>
                             <p class="how-text">From the 'Intro Screen':</p>
@@ -73,8 +74,14 @@
                 </div>
               </div>
               <div class="row">
-                  <div class="col">
-                        <div id="timmerDisplay" class="text-white">
+                  <div class="col m-3">
+                        <div id="timer" style="display:none;">
+                            <div style="display: block; text-align: center;color: white;">Time Remaining</div>
+                            <div id="timer-number"></div>
+                            <svg>
+                                <circle class="circle" r="25" cx="50" cy="50"></circle>
+                            </svg>
+                           
                         </div>
                   </div>
               </div>

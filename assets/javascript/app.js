@@ -19,7 +19,7 @@
 //Globals
 var timmerDisplay = $('#timmerDisplay'), correct = [], incorrect = [], tQuests, results = [], timeRef, running = false,colorSpin = ['text-white bg-blue mb-3', 'text-white bg-cyan mb-3', 'text-white bg-green mb-3'], currentGameObj, questCount = 0
 //Global Conts
-const QUESTION_TIMMER = 20, WAIT_DELAY = 2000, D = ':', TF = 'tf', MULTI = 'multi';
+const QUESTION_TIMMER = 22, WAIT_DELAY = 2000, D = ':', TF = 'tf', MULTI = 'multi';
 // question object
 var triviaQuestion = function () {
     return {
@@ -28,7 +28,8 @@ var triviaQuestion = function () {
         question: '',
         answers: [], //hold mutiple coice and True False choices
         guessed: '', //holds players answer
-        answer: '' //holds real answer
+        answer: '', //holds real answer
+        isAnswerCorrect: false
     };
 }
 
@@ -38,7 +39,7 @@ var idCounter = 0, triviaQuestions = [], answers = '', questions = '', timeCount
 //Waits for document to load 
 $(document).ready(function () {
     
-    $('#timmerDisplay').hide();
+    $('#countdown').hide();
     $('#gameTitle').hide();
     $('#titleBar').hide();
     $('#howToBox').hide();
@@ -79,14 +80,23 @@ function doStartScreen() {
 
     $('#spage1').click(function () {
       
-        $('#startScreen').fadeOut(500)
+        $('#startScreen').fadeOut(250)
             setTimeout(startTheGame, 250)
     })
-   
+    $('#spage2').click(function () {
+
+        $('#startScreen').fadeOut(250)
+        $('#howToBox').fadeIn(500);
+        $('#exitHowTo').click(function () {
+            $('#howToBox').fadeOut(150);
+            $('#startScreen').fadeIn(250)
+        })
+       
+    })
     $('#spage3').click(function () {
      
         $('#startScreen').fadeOut(500)
-            exitGame();
+        
     })
 }
 
@@ -98,17 +108,7 @@ function startTheGame() {
         startGame()
     
 }
-function howToPlay() {
-   $('#howToBox').fadeIn(500);
-    $('#exitHowTo').click(function () {
-        $('#howToBox').fadeOut(500);
-        doStartScreen()
-    })
-}
-function exitGame() {
-    
 
-}
 //Game object that stores the current display logic and creates the click events for the dynamically created game elements
 var game = function () {
     return {
@@ -136,7 +136,7 @@ var game = function () {
                 $('#area').addClass('card col');
                 $('#area').addClass(bgColor);
                 $(answerList).addClass('list-group list-group-flush');
-                $('#area').fadeIn();
+                
                 //Creates The question choices as a list item that then is style like a button
                 for (let i = 0; i < this.choices.length; i++) {
                    
@@ -173,11 +173,9 @@ var game = function () {
                 $('#multi-choice-answers').append(answerList);
                 $('#question').text(this.question);
                 $('#qtitle').text(this.tile);
-
+                $('#area').fadeIn(120);
                 timeCount = QUESTION_TIMMER;
-                setTimer(timeCount);
-                updateTimmerDisplay();
-                 $(timmerDisplay).fadeIn(250);
+                setTimer();
                setTimeout(startTimmer, 500);
 
             }
@@ -190,8 +188,8 @@ var game = function () {
         },
         playerAnswer: '',
         bclick: function (event) {// the click event that is attached to the answer choice buttons
-            pauseTimmer();
-            $(timmerDisplay).hide();
+            resetTimmer();
+            updateTimmerDisplay(true)
             $('#area').hide();
             var choice = event.currentTarget.id;
             var letterAnswer;
@@ -346,10 +344,9 @@ function processQuestions(_questions) {
 function startGame() {
 
     resetScreen();
-    updateTimmerDisplay();
     results = [];
     currentGameObj = new game();
-
+    $('#timer').show();
     currentGameObj.startGame();
 
 }
@@ -365,68 +362,80 @@ function getNextQuestion() {
 //Converts the counter into the displayed countdown digits
 function timeToString(t) {
 
-    var seconds = t.toString();
+    var seconds = parseInt(t);
 
     if (seconds < 10) {
-        seconds = "0" + seconds;
+        if (!$('#timer-number').hasClass('below10')) {
+            $('#timer-number').addClass('below10')
+        } 
+        seconds = "0" + seconds.toString();
     } else {
-
+        if ($('#timer-number').hasClass('below10')) {
+            $('#timer-number').removeClass('below10')
+        } 
     }
-    return seconds + ' <span class="seconds"> seconds remaining.</span>';
+    return seconds.toString();
 }
 //Timer counter
 function tick() {
-    if (running) {
 
+    
+    if (running) {
+        updateTimmerDisplay()
+        if (timeCount > 20) {
+            timeCount = 20
+        }
         if (timeCount == 0) {
-            clearInterval(timeRef)
             running = false;
+            $('circle').removeClass('circle')
+            $('#timer').hide()
+            clearInterval(timeRef)
             timesUP();
 
-        } else {
-            timeCount--;
-            updateTimmerDisplay();
+        }
+        if(timeCount > 0 ) {
+            timeCount--
+            
         }
     }
 }
 //Sets the initial count down time
-function setTimer(_time = 0) {
-    if (_time != 0) {
-        time = _time;
-    }
-
+function setTimer(_time = 20) {
     running = false;
+    clearInterval(timeRef)    
+    timeCount = 20;
+    
 }
 //Updates the screen to shows seconds left
-function updateTimmerDisplay() {
-    var t = timeToString(timeCount);
-    $(timmerDisplay).html(t);
-
+function updateTimmerDisplay(force = false) {
+    if (force) {
+        $('#timer-number').text(timeToString(20))
+    } else {
+        $('#timer-number').text(timeToString(timeCount))
+    }
 }
 //Start the global timer
 function startTimmer() {
     if (!running) {
-
-        running = true;
-        timeRef = setInterval(tick, 1000);
        
-    } else {
-        running = false;
-        clearInterval(timeRef)
         running = true;
-        timeRef = setInterval(tick, 1000);
+        
+        timeRef = setInterval(tick, 1000)
+        $('circle').addClass('circle')
+        $('#timer').show()
     }
+   
 
-}//Not used but here incase I need a use for it, I just puses the timer
-function pauseTimmer() {
-    if (running) {
-        clearInterval(timeRef);
-        running = false;
-    }
+}
+function stopTimer() {
+    $('#timer').hide()
+    $('circle').removeClass('circle')
+    running = false;
+    clearInterval(timeRef)
 }
 // resets the timer for the next question
 function resetTimmer() {
-    pauseTimmer();
+    stopTimer();
     timeCount = parseInt(QUESTION_TIMMER);
 }
 
@@ -434,25 +443,22 @@ function resetTimmer() {
 //Clears the elements on the screen
 function resetScreen() {
     $('#area').hide();
-    $('#question').text('');
-    $('#multi-choice-answers').text('');
-    $('#tf-answers').text('');
-    $('#timmerDisplay').empty();
+    $('#question').empty();
+    $('#multi-choice-answers').empty();
+    $('#tf-answers').empty();
 
 }
 //called when timer hits 0 on all questions
 function timesUP() {
-    //TODO: function to fire when time is up. Needs to load the next question if there is one
-
     $('#area').fadeOut(250);
-    $(timmerDisplay).fadeOut(250);
-
+    scoreIt('TimeOut');
+    
     if (isGameOver()) {
 
-        setTimeout(showGameOutcome, 5000);
+        setTimeout(showGameOutcome, 6000);
 
     } else {
-        scoreIt('TimeOut');
+        
         setTimeout(next, 5000);
     }
 }
