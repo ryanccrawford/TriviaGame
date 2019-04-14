@@ -31,7 +31,6 @@
         line-height: 2;
         font-family: sans-serif;
 }
-
 .how-text{
     letter-spacing: 3px;
     font-family: sans-serif;
@@ -59,30 +58,7 @@
         letter-spacing: 10px;
         margin: 15px;
 }
-svg {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 40px;
-    height: 40px;
-}
 
-svg circle {
-    stroke-dasharray: 0;
-    stroke-dashoffset: 0px;
-    stroke-width: 3px;
-    stroke: green;
-    fill: none;
-    animation: moveAround 5s linear forwards;
-}
-  
-
-
-  @keyframes moveAround {
-      to {
-          stroke-dashoffset: 0;
-      }
-  }
 #timmerDisplay {
     font-size: 60px;
     font-family: 'count' !important;
@@ -113,13 +89,6 @@ svg circle {
     letter-spacing: 5px;
     margin-top: 50px;
 
-}
-
-.correctMark {
-    background-image: url(../images/check.gif);
-    background-repeat: no-repeat;
-    background-position: top;
-    background-size: cover;
 }
 
 .correctText {
@@ -156,18 +125,13 @@ svg circle {
     font-size: 20px;
 }
 .list-group-item {
-    font-size: 16px;
+    font-size: 2rem;
     text-align: center;
     padding: 14px;
 }
 
 .list-group-item:hover {
     font-weight: bolder;
-}
-
-.list-group-item:active {
-    list-style-image: url(../images/check.gif);
-
 }
 
 .rounded {

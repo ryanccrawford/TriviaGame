@@ -49,9 +49,9 @@
                             <h1 class="gameDisplay text-center">ARE YOU HUMAN?</h1>
                             <h2 class="text-center text-white">How Human Are You?</h2>
                             <h3 class="small text-center text-white game-subtitle">How much you don't know about human behavior.</h3>
-                            <button class="intro-button" data-bname="start">Start Game</button>
-                            <button class="intro-button" data-bname="how-to-play">How to Play</button>
-                            <button class="intro-button" data-bname="exit">Leave Game</button>
+                            <button id="spage1" class="intro-button">Start Game</button>
+                           
+                            <button id="spage3" class="intro-button">Leave Game</button>
                         </div>
                     </div>
                     <div id="howToBox">
@@ -65,10 +65,7 @@
                                 </ol>
                             <p class="how-text">Read the question and before the timmer expires, pick one of the listed answers. If the timmer runs out 
                                 of time before you select an answer, you will get the question wrong then move on to the next 
-                                question until all questions are presented</p>
-                            <p class="how-text">If you answer incorrectly, the correct answer will display. If you get it correct you will be congradulated, then the 
-                                game will continue until all questions are answered.</p> <h2 class="how-text-heading2">Finishing the Game</h2><p class="how-text">Once you finish, your
-                                game stats will be displayed to show you how well you did.</p>
+                                question</p>
                             <p class="how-text small">Click the back button to return to the previous screen. </p>
                             <button id="exitHowTo" class="btn text-white bg-dark"><i class="fa fa-step-backward" aria-hidden="true"></i> Go Back</button>
                         </div>
@@ -77,19 +74,8 @@
               </div>
               <div class="row">
                   <div class="col">
-                     
-                    <div id="countdown">
                         <div id="timmerDisplay" class="text-white">
                         </div>
-                        <!-- This is a svg graphic circle to be animated as the ms in the second timer 
-                            the cy and cx are the x y center of the circle and the r is the radius of the circle in px
-                        we need this to be inside the countdown div so we can absolute position the numerical secs-->
-
-                        <svg id="circleCount">
-                            <circle r="40" cx="40" cy="40"></circle>
-                        </svg>
-                    
-                    </div>
                   </div>
               </div>
           </div>

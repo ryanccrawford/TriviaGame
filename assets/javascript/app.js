@@ -17,8 +17,7 @@
 
 
 //Globals
-var timmerDisplay = $('#timmerDisplay'), correct = [], incorrect = [], tQuests, results = [], timeRef, running = false, score = 0, colorSpin = ['text-white bg-blue mb-3', 'text-white bg-cyan mb-3', 'text-white bg-green mb-3'];
-var currentGameObj, questCount = 0, timerCircum = 0; timerCurrentPosition = 0, circumHasBeenSet = false; incramentLength = 0;
+var timmerDisplay = $('#timmerDisplay'), correct = [], incorrect = [], tQuests, results = [], timeRef, running = false,colorSpin = ['text-white bg-blue mb-3', 'text-white bg-cyan mb-3', 'text-white bg-green mb-3'], currentGameObj, questCount = 0
 //Global Conts
 const QUESTION_TIMMER = 20, WAIT_DELAY = 2000, D = ':', TF = 'tf', MULTI = 'multi';
 // question object
@@ -38,78 +37,73 @@ var idCounter = 0, triviaQuestions = [], answers = '', questions = '', timeCount
 
 //Waits for document to load 
 $(document).ready(function () {
+    
     $('#timmerDisplay').hide();
     $('#gameTitle').hide();
     $('#titleBar').hide();
     $('#howToBox').hide();
+   
+    $('#questionHolder').empty();
+    $('#answerHolder').empty();
+    $('#questionHolder').load("https://ryanccrawford.github.io/TriviaGame/assets/data/questions.txt", 'load=true',
+        function (data, status) {
+
+            if (status === 'success') {
+                processQuestions(data);
+                $('#answerHolder').load("https://ryanccrawford.github.io/TriviaGame/assets/data/answers.txt", 'load=true',
+                    function (answers, status) {
+                        if (status === 'success') {
+
+                            processAnswers(answers);
+                            
+                        } else {
+                            doLoadError();
+                        }
+                    }
+                );
+            } else {
+                doLoadError();
+            }
+        }
+    );
     doStartScreen();
+
+  
+    
 });
 
 //start screen creator
 function doStartScreen() {
-    var startScreen = $('#startScreen') 
-    $(startScreen).fadeIn(500)//grab start screen div
-    $('.intro-button').click(function () {
-        var buttonClicked = $(this).attr('data-bname')
-        if (buttonClicked === 'start') {
-            $(startScreen).fadeOut(500)
+   
+    $('#startScreen').fadeIn(250)
+
+    $('#spage1').click(function () {
+      
+        $('#startScreen').fadeOut(500)
             setTimeout(startTheGame, 250)
-        }
-        if (buttonClicked === 'how-to-play') {
-            $(startScreen).fadeOut(500)
-            setTimeout(howToPlay, 250)
-        }
-        if (buttonClicked === 'exit') {
-            $(startScreen).fadeOut(500)
+    })
+   
+    $('#spage3').click(function () {
+     
+        $('#startScreen').fadeOut(500)
             exitGame();
-        }
     })
 }
+
 function startTheGame() {
     
-    setTimeout(function () {
-        $('#gameTitle').fadeIn(100);
-        $('#titleBar').fadeIn(250);
-
-    }, 250) 
-    $('#questionHolder').empty();
-    $('#answerHolder').empty();
-    $('#questionHolder').load("https://ryanccrawford.github.io/TriviaGame/assets/data/questions.txt", 'load=true',
-            function (data, status) {
-
-                if (status === 'success') {
-                    $('#questionHolder').empty();
-                 processQuestions(data);
-
-                    $('#answerHolder').load("https://ryanccrawford.github.io/TriviaGame/assets/data/answers.txt", 'load=true',
-                        function (answers, status) {
-                            if (status === 'success') {
-                                $('#answerHolder').empty();
-                                processAnswers(answers); 
-                                setTimeout(startGame, 2000);
-                            } else {
-                                doLoadError();
-                            }
-                        }
-                    );
-                } else {
-                    doLoadError();
-                }
-            }
-        );
-
-        
     
-      
+        $('#gameTitle').fadeIn(250);
+        $('#titleBar').fadeIn(100);
+        startGame()
+    
 }
 function howToPlay() {
-    var howTo = $('#howToBox')
-    $(howTo).fadeIn(500);
+   $('#howToBox').fadeIn(500);
     $('#exitHowTo').click(function () {
-        $(howTo).fadeOut(500);
-        setTimeout(doStartScreen, 700);
+        $('#howToBox').fadeOut(500);
+        doStartScreen()
     })
-
 }
 function exitGame() {
     
@@ -124,28 +118,30 @@ var game = function () {
         choices: null,
         answer: null,
         _questionObject: null,
-        nextQuestion: function () {
+        nextQuestion: function () { // creates the question card and fill it withe answers
             questCount++;
             if (!running) {
+             
                 $('#multi-choice-answers').empty();
                 this.question = this._questionObject.question;
                 this.id = this._questionObject.id;
                 this.tile = questCount + ". " + this._questionObject.title;
                 this.choices = this._questionObject.answers;
-                this.answer = this._questionObject.answer;
+                this.answer = this._questionObject.answer.charAt(0);
                 var answerList = $('<ul>');
-                var color = Math.floor(Math.random() * 3);
+                var color = Math.floor(Math.random() * 3);// Randomly select a color to use as the color background
                 var bgColor = colorSpin[color];
+
                 $('#area').removeClass();
                 $('#area').addClass('card col');
                 $('#area').addClass(bgColor);
                 $(answerList).addClass('list-group list-group-flush');
                 $('#area').fadeIn();
+                //Creates The question choices as a list item that then is style like a button
                 for (let i = 0; i < this.choices.length; i++) {
+                   
                     var button = $('<li>');
                     $(button).addClass('text-dark');
-
-
                     if (this.choices.length == 2) {
                         if (i == 0) {
                             $(button).attr('id', 'answer_T');
@@ -157,18 +153,22 @@ var game = function () {
                         $(button).attr('id', 'answer_' + i.toString());
 
                     }
-
-
+                    // var imagName
+                    // var cardImg = $('<img>')
+                    // if (imageCount < 10) {
+                    //  imagName = './assets/images/image__' + (imageCount++).toString() + '__.jpg'
+                    // } else {
+                    //     imagName = './assets/images/image__' + (imageCount++).toString() + '_.jpg'
+                    // }
+            
+                   
+                   
                     var answerText = this.choices[i];
-                    // var icon = $('<img>');
-                    // $(icon).attr('src', '../images/check.gif');
-                    // $(icon).css('width', '64px');
-                    // $(button).before(icon);
                     $(button).text(answerText.toUpperCase());
                     $(button).click(this.bclick);
                     $(button).addClass('list-group-item pointer-hover');
                     $(answerList).append(button);
-
+                    //$('body').css('background-image','url('+imagName+')');
                 }
                 $('#multi-choice-answers').append(answerList);
                 $('#question').text(this.question);
@@ -189,13 +189,13 @@ var game = function () {
 
         },
         playerAnswer: '',
-        bclick: function (event) {
+        bclick: function (event) {// the click event that is attached to the answer choice buttons
             pauseTimmer();
             $(timmerDisplay).hide();
             $('#area').hide();
             var choice = event.currentTarget.id;
             var letterAnswer;
-            switch (choice) {
+            switch (choice) { //Checks users Input
                 case 'answer_0':
                     letterAnswer = 'A'
                     break;
@@ -243,17 +243,19 @@ function next() {
 }
 // checks and stores the players answers
 function scoreIt(_answer) {
-    currentGameObj._questionObject.playerAnswer = _answer;
-    if (currentGameObj._questionObject.answer.startsWith(_answer)) {
-        currentGameObj._questionObject.isAnswerCorrect = true;
-        showCorrectMessage(currentGameObj._questionObject);
+    var questionObj = currentGameObj._questionObject
+    questionObj.playerAnswer = _answer;
+    if (questionObj.answer.startsWith(_answer)) {
+        questionObj.isAnswerCorrect = true;
+        showCorrectMessage(questionObj);
     } else {
-        currentGameObj._questionObject.isAnswerCorrect = false;
-        showIncorrectMessage(currentGameObj._questionObject);
+        questionObj.isAnswerCorrect = false;
+        showIncorrectMessage(questionObj);
     }
-    results.push(currentGameObj._questionObject);
+    results.push(questionObj);
 
 }
+//--------------------- Ryans Custom File Parser --------------------------------------------------
 // Shows Correct answer message
 function showCorrectMessage(_questObj) {
     var a = getTF(_questObj.answer);
@@ -266,7 +268,7 @@ function showCorrectMessage(_questObj) {
     }, 3000)
 
 }
-//Displays Message for Wron Answers
+//Displays Message for Wrong Answers
 function showIncorrectMessage(_questObj) {
     var a = getTF(_questObj.answer);
     $('.incorrect').hide()
@@ -278,6 +280,8 @@ function showIncorrectMessage(_questObj) {
         $('.incorrect').fadeOut(500)
     }, 3000)
 }
+
+//-------------------------- Parser Helper Functions -------------------------------------------------------
 //Used to decode True False Answers
 function getTF(_answer) {
     if (_answer.startsWith('T')) {
@@ -302,7 +306,7 @@ function processAnswers(_answers) {
         if (!ref.value) {
             break;
         }
-        triviaQuestions[ct++].answer = ref.value[1];
+        triviaQuestions[ct++].answer = ref.value[1].charAt(0);
     }
 }
 //Custom Regex Parser for Questions File
@@ -336,6 +340,8 @@ function processQuestions(_questions) {
 
 
 }
+
+//---------------------------------Game Functions--------------------------------------------------------
 //Start up and Init Game
 function startGame() {
 
@@ -354,7 +360,7 @@ function getNextQuestion() {
 
 }
 
-//Timer Functions ------------------------------------------------------------------
+//---------------------------------------Timer Functions ------------------------------------------------------------------
 
 //Converts the counter into the displayed countdown digits
 function timeToString(t) {
@@ -394,21 +400,6 @@ function setTimer(_time = 0) {
 //Updates the screen to shows seconds left
 function updateTimmerDisplay() {
     var t = timeToString(timeCount);
-    //use the parent > child selector to get the child circle element of the parent svg element 
-    // use C=2πr to find the length of the line that will wrap the circle
-    //timerCircum = 0; timerCurrentPosition = 0;
-    var circleOutline = $('#circleCount > circle')
-    if (!circumHasBeenSet) {
-        circumHasBeenSet = true;
-        var timerRadius = $(circleOutline).attr('r');
-        timerCircum = 2 * 3.14 * parseFloat(timerRadius);
-        $(circleOutline).css('stroke-dasharray', parseInt(timerCircum).toString())
-        incramentLength = timerCircum / 20
-        
-    }
-    
-    timerCurrentPosition -= incramentLength
-    $(circleOutline).css('stroke-dashoffset', parseInt(timerCurrentPosition).toString())
     $(timmerDisplay).html(t);
 
 }
@@ -439,6 +430,7 @@ function resetTimmer() {
     timeCount = parseInt(QUESTION_TIMMER);
 }
 
+//---------------------------------------Game Helper Functions-------------------------
 //Clears the elements on the screen
 function resetScreen() {
     $('#area').hide();
@@ -474,51 +466,50 @@ function showGameOutcome() {
     var correct = 0, incorrect = 0, timedout = 0;
     var answersLength = results.length
     for (let i = 0; i < answersLength; i++) {
-        var yourGuess = results[i].playerAnswer
-        var rightAnswer = results[i].answer
-        if (yourGuess === 'TimeOut') {
-            timedout++
-            continue;
-        }
-        if (yourGuess.startsWith(rightAnswer)) {
+      
+        if (results[i].isAnswerCorrect) {
             correct++
-            continue;
+           
+        } else {
+            incorrect++
         }
-        incorrect++
+       
 
     }
     var percentage = parseInt((correct / answersLength) * 100)
-    var p1 = $('<p>').text('You got ' + correct + ' correct.').css('color', 'red')
-    var p2 = $('<p>').text('You got ' + incorrect + ' incorrect.').css('color', 'green')
-    var p3 = $('<p>').text('You got ' + timedout + ' incorrect.').css('color', 'red')
-    var p4 = $('<p>').text("That's " + percentage + "% ")
-    $('.modal-body').append(p1).append(p2).append(p3);
+    var p1 = $('<p>').text('You got ' + correct + ' correct.').css('color', 'Green')
+    var p2 = $('<p>').text('And ' + incorrect + ' incorrect out of ' + answersLength.toString()).css('color', 'red')
+    var p3 = $('<p>').text("That's " + percentage + "% ").css('color', 'blue')
+    $('.modal-body').empty()
+   
     var message;
     if (percentage > 90) {
-        message = "Wow! You Are Really Smart!. ";
+        message = "Wow! You Are Super Human!. ";
 
     }
     if (percentage > 80) {
-        message = "Not Bad! You Not Too Smart and Not Too Not Smart. Perfect Balance."
+        message = "Not Bad! You Know Your Stuff."
     }
     if (percentage > 70) {
-        message = "It's True, You Are Just Like Everyone Else. Average Joe. With a Little Work You Could be Noticed As Unique!"
+        message = "It's True, You Are Just Like Everyone Else, Human, AKA Average Joe. With a Little Work, You Could Pass as Human!"
     }
     if (percentage > 60) {
-        message = "Sorry, but if you put the phone down for a day and left the house once a week, starting today, there might be hope for you!"
+        message = "Sorry, but you are most likley NOT Human!"
     }
     if (percentage <= 60) {
-        message = "Were you just pressing keys? Ouch! The bad news... You are beyond help. The good news... The planet will end soon anyways"
+        message = "Were you just pressing random keys? The bad news is.. The game is over. The good news... You can play again!"
     }
-
+    var p4 = $('<p>').text(message);
+    $('.modal-body').append(p1).append(p2).append(p3).append(p4);
     $('#messageOver').on('show.bs.modal', function (event) {
         var trigger = $(event.relatedTarget);
         var modal = $(this);
         modal.find('.modal-title').text("Game Over");
-        var p4 = $('<p>').text(message);
-        modal.find('.modal-body').append(p1).append(p2).append(p3).append(p4);
-       
-
+              
+    })
+    $('#myModal').on('hidden.bs.modal', function (e) {
+        init();
+        doStartScreen();
     })
      $('#messageOver').modal('show');
 }
