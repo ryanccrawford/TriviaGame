@@ -38,7 +38,9 @@ var idCounter = 0, triviaQuestions = [], answers = '', questions = '', timeCount
 
 //Waits for document to load 
 $(document).ready(function () {
-    
+    init()
+})
+function init(){
     $('#countdown').hide();
     $('#gameTitle').hide();
     $('#titleBar').hide();
@@ -66,12 +68,12 @@ $(document).ready(function () {
                 doLoadError();
             }
         }
-    );
-    doStartScreen();
+    ).done(doStartScreen());
+    
 
   
     
-});
+}
 
 //start screen creator
 function doStartScreen() {
@@ -513,9 +515,22 @@ function showGameOutcome() {
         modal.find('.modal-title').text("Game Over");
               
     })
-    $('#myModal').on('hidden.bs.modal', function (e) {
-        init();
-        doStartScreen();
+    $('#messageOver').on('hidden.bs.modal', function (e) {
+
+        $('#gameTitle').fadeOut(250);
+        $('#titleBar').fadeOut(100);
+        results = [];
+        currentGameObj = null;
+        triviaQuestions = []
+        questions = ''
+        questCount = 0
+        tQuests = ''
+        incorrect = []
+        correct = []
+        clearInterval(timeRef)
+        timeRef = ''
+        running = false;
+        init()
     })
      $('#messageOver').modal('show');
 }
