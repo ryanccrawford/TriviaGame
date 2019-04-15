@@ -45,7 +45,9 @@ function init(){
     $('#gameTitle').hide();
     $('#titleBar').hide();
     $('#howToBox').hide();
-   
+   //here we use a little ajax trick that I learned a long long time ago. Because I'm using plain txt files stored on the 
+    //server I need a way to load the files without ajax in jq gving me greif. So I learned that by loading the files into a 
+    //div tag on the page using the load method. ajax will be nicer to me. 
     $('#questionHolder').empty();
     $('#answerHolder').empty();
     $('#questionHolder').load("https://ryanccrawford.github.io/TriviaGame/assets/data/questions.txt", 'load=true',
