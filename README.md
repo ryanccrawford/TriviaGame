@@ -1,6 +1,6 @@
 # Trivia Game
 # Are You Human?
-This is a game about human behavior. Trivia questions that are all about humans and how the behave.
+This is a game about human behavior. Trivia questions that are all about humans and how they behave.
 
 #How to Play
 From the 'Intro Screen':
